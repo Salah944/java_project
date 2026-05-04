@@ -4,19 +4,24 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class ConnectionDb {
+public final class ConnectionDb {
 
-    private static  String URL="jdbc:sqlserver://localhost:1433;databaseName=java_project;Encrypt=True;TrustServerCertificate=True;";
-    private static String user="sa";
-    private static String password="sa";
+    private static final String URL = getConfig(
+            "JAVA_PROJECT_DB_URL",
+            "jdbc:sqlserver://localhost:1433;databaseName=java_project;Encrypt=True;TrustServerCertificate=True;"
+    );
+    private static final String USER = getConfig("JAVA_PROJECT_DB_USER", "sa");
+    private static final String PASSWORD = getConfig("JAVA_PROJECT_DB_PASSWORD", "sa");
 
-
-    public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL, user,password);
-
+    private ConnectionDb() {
     }
 
-    public static void closeCnx(Connection cnx) throws SQLException {
-        cnx.close();
+    public static Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(URL, USER, PASSWORD);
+    }
+
+    private static String getConfig(String name, String defaultValue) {
+        String value = System.getenv(name);
+        return value == null || value.isBlank() ? defaultValue : value;
     }
 }
