@@ -19,6 +19,9 @@ public final class ConnectionDb {
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
+    public static void closecnx(Connection cnx) throws SQLException{
+        cnx.close();
+    }
 
     private static String getConfig(String name, String defaultValue) {
         String value = System.getenv(name);

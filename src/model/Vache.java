@@ -12,6 +12,7 @@ public class Vache extends Animal {
         this.milkProduction = milkProduction;
     }
 
+
     public double getMilkProduction() {
         return milkProduction;
     }
