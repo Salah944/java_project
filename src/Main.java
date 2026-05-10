@@ -4,10 +4,10 @@ import model.Farm;
 import model.Poulet;
 import model.User;
 import model.Vache;
-import service.AnimalService;
-import service.AuthService;
-import service.FarmService;
-import service.UserService;
+import services.AnimalService;
+import services.AuthService;
+import services.Farmservice;
+import service.Userservice;
 
 import java.util.List;
 import java.util.Scanner;
@@ -15,10 +15,10 @@ import java.util.Scanner;
 public class Main {
 
     private static final Scanner SCANNER = new Scanner(System.in);
-    private static final AuthService AUTH_SERVICE = new AuthService();
-    private static final UserService USER_SERVICE = new UserService();
-    private static final FarmService FARM_SERVICE = new FarmService();
-    private static final AnimalService ANIMAL_SERVICE = new AnimalService();
+    private static final Authservice AUTH_service = new Authservice();
+    private static final Userservice USER_service = new Userservice();
+    private static final Farmservice FARM_service = new Farmservice();
+    private static final Animalservice ANIMAL_service = new Animalservice();
 
     public static void main(String[] args) {
         boolean running = true;
@@ -59,7 +59,7 @@ public class Main {
         String password = readRequiredString("Password: ");
 
         LoginRequestDTO request = new LoginRequestDTO(email, password);
-        UserResponseDTO response = AUTH_SERVICE.login(request);
+        UserResponseDTO response = AUTH_service.login(request);
 
         if (response == null) {
             System.out.println("Invalid email or password.");
@@ -78,7 +78,7 @@ public class Main {
         String role = readRole();
 
         User user = new User(0, name, email, password, role);
-        boolean added = USER_SERVICE.addUser(user);
+        boolean added = USER_service.addUser(user);
 
         System.out.println(added ? "User added." : "Failed to add user.");
     }
@@ -87,12 +87,12 @@ public class Main {
         String name = readRequiredString("Farm name: ");
         String location = readRequiredString("Location: ");
 
-        boolean added = FARM_SERVICE.addFarm(new Farm(0, name, location));
+        boolean added = FARM_service.addFarm(new Farm(0, name, location));
         System.out.println(added ? "Farm added." : "Failed to add farm.");
     }
 
     private static void showFarms() {
-        List<Farm> farms = FARM_SERVICE.getAllFarms();
+        List<Farm> farms = FARM_service.getAllFarms();
 
         if (farms.isEmpty()) {
             System.out.println("No farms found.");
@@ -116,7 +116,7 @@ public class Main {
         int eggProduction = readNonNegativeInt("Egg production: ");
 
         Poulet poulet = new Poulet(0, farmId, age, healthStatus, eggProduction);
-        boolean added = ANIMAL_SERVICE.addPoulet(poulet);
+        boolean added = ANIMAL_service.addPoulet(poulet);
 
         System.out.println(added ? "Poulet added." : "Failed to add poulet.");
     }
@@ -133,13 +133,13 @@ public class Main {
         double milkProduction = readNonNegativeDouble("Milk production: ");
 
         Vache vache = new Vache(0, farmId, age, healthStatus, milkProduction);
-        boolean added = ANIMAL_SERVICE.addVache(vache);
+        boolean added = ANIMAL_service.addVache(vache);
 
         System.out.println(added ? "Vache added." : "Failed to add vache.");
     }
 
     private static int readExistingFarmId() {
-        List<Farm> farms = FARM_SERVICE.getAllFarms();
+        List<Farm> farms = FARM_service.getAllFarms();
 
         if (farms.isEmpty()) {
             System.out.println("No farms found. Add a farm first.");
