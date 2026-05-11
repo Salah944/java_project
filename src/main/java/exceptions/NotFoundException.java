@@ -1,4 +1,4 @@
-﻿package exceptions;
+package exceptions;
 
 public class NotFoundException extends BusinessException {
     public NotFoundException(String message) {

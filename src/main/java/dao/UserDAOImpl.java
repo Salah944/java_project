@@ -1,4 +1,4 @@
-﻿package dao;
+package dao;
 
 import database.ConnectionDb;
 import model.User;
@@ -110,7 +110,8 @@ public class UserDAOImpl implements UserDAO {
                 rs.getString("name"),
                 rs.getString("email"),
                 rs.getString("password"),
-                Role.valueOf(rs.getString("role"))
+                Role.valueOf(rs.getString("role").trim().toUpperCase())
         );
     }
 }
+

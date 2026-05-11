@@ -1,4 +1,4 @@
-﻿package dao;
+package dao;
 
 import database.ConnectionDb;
 import model.Farm;

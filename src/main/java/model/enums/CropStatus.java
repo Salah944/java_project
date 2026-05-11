@@ -1,4 +1,4 @@
-﻿package model.enums;
+package model.enums;
 
 public enum CropStatus {
     PLANTED,

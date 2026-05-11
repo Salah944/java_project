@@ -1,4 +1,4 @@
-﻿package dao;
+package dao;
 
 import model.Cultiver;
 import java.util.List;

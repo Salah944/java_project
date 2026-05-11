@@ -1,4 +1,6 @@
-﻿import dto.UserResponseDTO;
+
+
+import dto.UserResponseDTO;
 import exceptions.BusinessException;
 import model.Farm;
 import model.Poulet;
@@ -26,17 +28,38 @@ public class Main {
                 int choice = readInt("Choice: ");
 
                 switch (choice) {
-                    case 1 -> login();
-                    case 2 -> addUser();
-                    case 3 -> addFarm();
-                    case 4 -> showFarms();
-                    case 5 -> addPoulet();
-                    case 6 -> addVache();
-                    case 7 -> findFarmById();
-                    case 8 -> updateFarm();
-                    case 9 -> deleteFarm();
-                    case 0 -> running = false;
-                    default -> System.out.println("Invalid choice.");
+                    case 1:
+                        login();
+                        break;
+                    case 2:
+                        addUser();
+                        break;
+                    case 3:
+                        addFarm();
+                        break;
+                    case 4:
+                        showFarms();
+                        break;
+                    case 5:
+                        addPoulet();
+                        break;
+                    case 6:
+                        addVache();
+                        break;
+                    case 7:
+                        findFarmById();
+                        break;
+                    case 8:
+                        updateFarm();
+                        break;
+                    case 9:
+                        deleteFarm();
+                        break;
+                    case 0:
+                        running = false;
+                        break;
+                    default:
+                        System.out.println("Invalid choice.");
                 }
             } catch (BusinessException e) {
                 System.out.println("Erreur métier : " + e.getMessage());
@@ -202,3 +225,4 @@ public class Main {
         return SCANNER.hasNextLine() ? SCANNER.nextLine().trim() : "";
     }
 }
+

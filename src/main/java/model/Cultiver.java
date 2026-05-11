@@ -1,4 +1,4 @@
-﻿package model;
+package model;
 
 import model.enums.CropStatus;
 import java.util.Date;

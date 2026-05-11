@@ -1,4 +1,4 @@
-﻿package dao;
+package dao;
 
 import database.ConnectionDb;
 import model.Cultiver;
@@ -93,7 +93,7 @@ public class CultiverDAOImpl implements CultiverDAO {
                         rs.getDate("planning_date"),
                         rs.getDate("herves_date"),
                         rs.getInt("quantity"),
-                        CropStatus.valueOf(rs.getString("status"))
+                        CropStatus.valueOf(rs.getString("status").trim().toUpperCase())
                     ));
                 }
             }
@@ -103,3 +103,4 @@ public class CultiverDAOImpl implements CultiverDAO {
         return list;
     }
 }
+

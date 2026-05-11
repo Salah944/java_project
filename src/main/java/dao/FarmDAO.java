@@ -1,4 +1,4 @@
-﻿package dao;
+package dao;
 
 import model.Farm;
 import java.util.List;

@@ -1,4 +1,4 @@
-﻿package exceptions;
+package exceptions;
 
 public class ValidationException extends BusinessException {
     public ValidationException(String message) {

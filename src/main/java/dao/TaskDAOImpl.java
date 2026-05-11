@@ -1,4 +1,4 @@
-﻿package dao;
+package dao;
 
 import database.ConnectionDb;
 import model.Task;
@@ -116,7 +116,7 @@ public class TaskDAOImpl implements TaskDAO {
                             rs.getInt("farm_id"),
                             rs.getObject("worker_id") != null ? rs.getInt("worker_id") : null,
                             rs.getString("description"),
-                            TaskStatus.valueOf(rs.getString("status")),
+                            TaskStatus.valueOf(rs.getString("status").trim().toUpperCase()),
                             rs.getDate("due_date")
                     );
                     tasks.add(task);
@@ -128,3 +128,4 @@ public class TaskDAOImpl implements TaskDAO {
         return tasks;
     }
 }
+

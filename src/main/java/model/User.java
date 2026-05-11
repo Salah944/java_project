@@ -1,4 +1,4 @@
-﻿package model;
+package model;
 
 import model.enums.Role;
 
@@ -17,6 +17,9 @@ public class User {
         this.email = email;
         this.password = password;
         this.role = role;
+    }
+
+    public User(int id, String name, String email, String password, String name1) {
     }
 
     public int getId() { return id; }

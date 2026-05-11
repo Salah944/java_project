@@ -1,4 +1,4 @@
-﻿package main.java.controller;
+package controller;
 
 import model.Task;
 import model.enums.TaskStatus;

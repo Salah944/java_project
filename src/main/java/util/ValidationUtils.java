@@ -1,4 +1,4 @@
-﻿package util;
+package util;
 
 import exceptions.ValidationException;
 import java.util.regex.Pattern;
