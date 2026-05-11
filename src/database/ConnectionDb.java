@@ -8,7 +8,7 @@ public final class ConnectionDb {
 
     private static final String URL = getConfig(
             "JAVA_PROJECT_DB_URL",
-            "jdbc:sqlserver://localhost:1433;databaseName=java_project;Encrypt=True;TrustServerCertificate=True;"
+            "jdbc:sqlserver://localhost:1433;databaseName=FermeAgricole;Encrypt=True;TrustServerCertificate=True;"
     );
     private static final String USER = getConfig("JAVA_PROJECT_DB_USER", "sa");
     private static final String PASSWORD = getConfig("JAVA_PROJECT_DB_PASSWORD", "sa");

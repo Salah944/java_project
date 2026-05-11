@@ -14,19 +14,16 @@ public class FarmDAOImpl implements FarmDAO {
 
     @Override
     public void create(Farm farm) {
-        try {
-            Connection cnx = ConnectionDb.getConnection();
-            PreparedStatement stmt = cnx.prepareStatement(
-                    "INSERT INTO Farms (name, location) VALUES (?, ?)"
-            );
+        String sql = "INSERT INTO Farm (name, location) VALUES (?, ?)";
+
+        try (Connection cnx = ConnectionDb.getConnection();
+             PreparedStatement stmt = cnx.prepareStatement(sql)) {
             stmt.setString(1, farm.getName());
             stmt.setString(2, farm.getLocation());
 
             int rows = stmt.executeUpdate();
-            if (rows > 0) System.out.println("Ferme créée avec succès.");
-            else          System.out.println("Echec de création.");
-
-            ConnectionDb.closecnx(cnx);
+            if (rows > 0) System.out.println("Ferme creee avec succes.");
+            else          System.out.println("Echec de creation.");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -35,10 +32,11 @@ public class FarmDAOImpl implements FarmDAO {
     @Override
     public List<Farm> getAll() {
         List<Farm> farms = new ArrayList<>();
-        try {
-            Connection cnx = ConnectionDb.getConnection();
-            PreparedStatement stmt = cnx.prepareStatement("SELECT * FROM Farms");
-            ResultSet rs = stmt.executeQuery();
+        String sql = "SELECT * FROM Farm";
+
+        try (Connection cnx = ConnectionDb.getConnection();
+             PreparedStatement stmt = cnx.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
                 farms.add(new Farm(
@@ -47,54 +45,50 @@ public class FarmDAOImpl implements FarmDAO {
                         rs.getString("location")
                 ));
             }
-
-            ConnectionDb.closecnx(cnx);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+
         return farms;
     }
 
     @Override
     public Farm getById(int id) {
-        Farm farm = null;
-        try {
-            Connection cnx = ConnectionDb.getConnection();
-            PreparedStatement stmt = cnx.prepareStatement("SELECT * FROM Farms WHERE id = ?");
+        String sql = "SELECT * FROM Farm WHERE id = ?";
+
+        try (Connection cnx = ConnectionDb.getConnection();
+             PreparedStatement stmt = cnx.prepareStatement(sql)) {
             stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
 
-            if (rs.next()) {
-                farm = new Farm(
-                        rs.getInt("id"),
-                        rs.getString("name"),
-                        rs.getString("location")
-                );
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Farm(
+                            rs.getInt("id"),
+                            rs.getString("name"),
+                            rs.getString("location")
+                    );
+                }
             }
-
-            ConnectionDb.closecnx(cnx);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        return farm;
+
+        return null;
     }
 
     @Override
     public void update(Farm farm, int id) {
-        try {
-            Connection cnx = ConnectionDb.getConnection();
-            PreparedStatement stmt = cnx.prepareStatement(
-                    "UPDATE Farms SET name = ?, location = ? WHERE id = ?"
-            );
+        String sql = "UPDATE Farm SET name = ?, location = ? WHERE id = ?";
+
+        try (Connection cnx = ConnectionDb.getConnection();
+             PreparedStatement stmt = cnx.prepareStatement(sql)) {
             stmt.setString(1, farm.getName());
             stmt.setString(2, farm.getLocation());
             stmt.setInt(3, id);
 
             int rows = stmt.executeUpdate();
-            if (rows > 0) System.out.println("Ferme mise à jour.");
-            else          System.out.println("Echec de mise à jour.");
-
-            ConnectionDb.closecnx(cnx);
+            if (rows > 0) System.out.println("Ferme mise a jour.");
+            else          System.out.println("Echec de mise a jour.");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -102,16 +96,15 @@ public class FarmDAOImpl implements FarmDAO {
 
     @Override
     public void delete(int id) {
-        try {
-            Connection cnx = ConnectionDb.getConnection();
-            PreparedStatement stmt = cnx.prepareStatement("DELETE FROM Farms WHERE id = ?");
+        String sql = "DELETE FROM Farm WHERE id = ?";
+
+        try (Connection cnx = ConnectionDb.getConnection();
+             PreparedStatement stmt = cnx.prepareStatement(sql)) {
             stmt.setInt(1, id);
 
             int rows = stmt.executeUpdate();
-            if (rows > 0) System.out.println("Ferme supprimée.");
+            if (rows > 0) System.out.println("Ferme supprimee.");
             else          System.out.println("Echec de suppression.");
-
-            ConnectionDb.closecnx(cnx);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }

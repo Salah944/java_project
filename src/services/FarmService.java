@@ -1,4 +1,4 @@
-package service;
+package services;
 
 import dao.FarmDAO;
 import dao.FarmDAOImpl;
@@ -37,6 +37,14 @@ public class FarmService {
     public void updateFarm(Farm farm, int id) {
         if (id <= 0) {
             System.out.println("Erreur : id invalide.");
+            return;
+        }
+        if (farm.getName() == null || farm.getName().isEmpty()) {
+            System.out.println("Erreur : le nom de la ferme est obligatoire.");
+            return;
+        }
+        if (farm.getLocation() == null || farm.getLocation().isEmpty()) {
+            System.out.println("Erreur : la localisation est obligatoire.");
             return;
         }
         farmDAO.update(farm, id);

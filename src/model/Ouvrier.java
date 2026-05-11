@@ -4,10 +4,10 @@ public class Ouvrier extends User {
     private double salaire;
     private String role;
 
-    public Ouvrier(int id, String name, String email, String password, String role, float salaire, String role1) {
-        super(id, name, email, password, role);
+    public Ouvrier(int id, String name, String email, String password, double salaire, String role) {
+        super(id, name, email, password, "OUVRIER");
         this.salaire = salaire;
-        this.role = role1;
+        this.role = role;
     }
 
     public double getSalaire() {

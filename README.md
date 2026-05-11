@@ -11,6 +11,9 @@ L'application permet actuellement de gerer les elements suivants :
 - creation d'un nouvel utilisateur
 - creation d'une ferme
 - affichage des fermes
+- recherche d'une ferme par id
+- modification d'une ferme
+- suppression d'une ferme
 - ajout d'un poulet dans une ferme existante
 - ajout d'une vache dans une ferme existante
 
@@ -117,6 +120,9 @@ Le fichier `Main.java` lance un menu interactif :
 4. Show farms
 5. Add poulet
 6. Add vache
+7. Find farm by id
+8. Update farm
+9. Delete farm
 0. Exit
 ```
 
@@ -138,6 +144,9 @@ Les fonctionnalites principales deja implementees sont :
 - ajout utilisateur
 - ajout ferme
 - affichage des fermes
+- recherche d'une ferme par id
+- modification d'une ferme
+- suppression d'une ferme
 - ajout vache
 - ajout poulet
 

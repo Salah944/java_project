@@ -6,8 +6,8 @@ import model.User;
 import model.Vache;
 import services.AnimalService;
 import services.AuthService;
-import services.Farmservice;
-import service.Userservice;
+import services.FarmService;
+import services.UserService;
 
 import java.util.List;
 import java.util.Scanner;
@@ -15,10 +15,10 @@ import java.util.Scanner;
 public class Main {
 
     private static final Scanner SCANNER = new Scanner(System.in);
-    private static final Authservice AUTH_service = new Authservice();
-    private static final Userservice USER_service = new Userservice();
-    private static final Farmservice FARM_service = new Farmservice();
-    private static final Animalservice ANIMAL_service = new Animalservice();
+    private static final AuthService AUTH_SERVICE = new AuthService();
+    private static final UserService USER_SERVICE = new UserService();
+    private static final FarmService FARM_SERVICE = new FarmService();
+    private static final AnimalService ANIMAL_SERVICE = new AnimalService();
 
     public static void main(String[] args) {
         boolean running = true;
@@ -34,6 +34,9 @@ public class Main {
                 case 4 -> showFarms();
                 case 5 -> addPoulet();
                 case 6 -> addVache();
+                case 7 -> findFarmById();
+                case 8 -> updateFarm();
+                case 9 -> deleteFarm();
                 case 0 -> running = false;
                 default -> System.out.println("Invalid choice.");
             }
@@ -51,6 +54,9 @@ public class Main {
         System.out.println("4. Show farms");
         System.out.println("5. Add poulet");
         System.out.println("6. Add vache");
+        System.out.println("7. Find farm by id");
+        System.out.println("8. Update farm");
+        System.out.println("9. Delete farm");
         System.out.println("0. Exit");
     }
 
@@ -59,7 +65,7 @@ public class Main {
         String password = readRequiredString("Password: ");
 
         LoginRequestDTO request = new LoginRequestDTO(email, password);
-        UserResponseDTO response = AUTH_service.login(request);
+        UserResponseDTO response = AUTH_SERVICE.login(request);
 
         if (response == null) {
             System.out.println("Invalid email or password.");
@@ -78,21 +84,18 @@ public class Main {
         String role = readRole();
 
         User user = new User(0, name, email, password, role);
-        boolean added = USER_service.addUser(user);
-
-        System.out.println(added ? "User added." : "Failed to add user.");
+        USER_SERVICE.createUser(user);
     }
 
     private static void addFarm() {
         String name = readRequiredString("Farm name: ");
         String location = readRequiredString("Location: ");
 
-        boolean added = FARM_service.addFarm(new Farm(0, name, location));
-        System.out.println(added ? "Farm added." : "Failed to add farm.");
+        FARM_SERVICE.createFarm(new Farm(0, name, location));
     }
 
     private static void showFarms() {
-        List<Farm> farms = FARM_service.getAllFarms();
+        List<Farm> farms = FARM_SERVICE.getAllFarms();
 
         if (farms.isEmpty()) {
             System.out.println("No farms found.");
@@ -102,6 +105,60 @@ public class Main {
         for (Farm farm : farms) {
             System.out.println(farm);
         }
+    }
+
+    private static void findFarmById() {
+        int farmId = readInt("Farm id: ");
+        Farm farm = FARM_SERVICE.getFarmById(farmId);
+
+        if (farm == null) {
+            System.out.println("Farm not found.");
+            return;
+        }
+
+        System.out.println(farm);
+    }
+
+    private static void updateFarm() {
+        int farmId = readExistingFarmId();
+
+        if (farmId == 0) {
+            return;
+        }
+
+        Farm existingFarm = FARM_SERVICE.getFarmById(farmId);
+        if (existingFarm == null) {
+            System.out.println("Farm not found.");
+            return;
+        }
+
+        System.out.println("Current farm: " + existingFarm);
+        String name = readRequiredString("New farm name: ");
+        String location = readRequiredString("New location: ");
+
+        FARM_SERVICE.updateFarm(new Farm(farmId, name, location), farmId);
+    }
+
+    private static void deleteFarm() {
+        int farmId = readExistingFarmId();
+
+        if (farmId == 0) {
+            return;
+        }
+
+        Farm existingFarm = FARM_SERVICE.getFarmById(farmId);
+        if (existingFarm == null) {
+            System.out.println("Farm not found.");
+            return;
+        }
+
+        System.out.println("Farm to delete: " + existingFarm);
+        if (!readConfirmation("Confirm delete? (yes/no): ")) {
+            System.out.println("Delete canceled.");
+            return;
+        }
+
+        FARM_SERVICE.deleteFarm(farmId);
     }
 
     private static void addPoulet() {
@@ -116,9 +173,7 @@ public class Main {
         int eggProduction = readNonNegativeInt("Egg production: ");
 
         Poulet poulet = new Poulet(0, farmId, age, healthStatus, eggProduction);
-        boolean added = ANIMAL_service.addPoulet(poulet);
-
-        System.out.println(added ? "Poulet added." : "Failed to add poulet.");
+        ANIMAL_SERVICE.addPoulet(poulet);
     }
 
     private static void addVache() {
@@ -133,13 +188,11 @@ public class Main {
         double milkProduction = readNonNegativeDouble("Milk production: ");
 
         Vache vache = new Vache(0, farmId, age, healthStatus, milkProduction);
-        boolean added = ANIMAL_service.addVache(vache);
-
-        System.out.println(added ? "Vache added." : "Failed to add vache.");
+        ANIMAL_SERVICE.addVache(vache);
     }
 
     private static int readExistingFarmId() {
-        List<Farm> farms = FARM_service.getAllFarms();
+        List<Farm> farms = FARM_SERVICE.getAllFarms();
 
         if (farms.isEmpty()) {
             System.out.println("No farms found. Add a farm first.");
@@ -249,6 +302,23 @@ public class Main {
             } catch (NumberFormatException e) {
                 System.out.println("Enter a valid number.");
             }
+        }
+    }
+
+    private static boolean readConfirmation(String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String value = readLine();
+
+            if (value.equalsIgnoreCase("yes") || value.equalsIgnoreCase("y")) {
+                return true;
+            }
+
+            if (value.equalsIgnoreCase("no") || value.equalsIgnoreCase("n")) {
+                return false;
+            }
+
+            System.out.println("Enter yes or no.");
         }
     }
 
