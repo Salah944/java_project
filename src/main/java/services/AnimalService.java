@@ -48,6 +48,13 @@ public class AnimalService {
         return animalDAO.getByFarm(farmId);
     }
 
+    public List<Animal> searchAnimalByType(String type) {
+        if (type == null || type.isBlank()) {
+            return animalDAO.getAll();
+        }
+        return animalDAO.getByType(type.trim());
+    }
+
     public Animal updateAnimal(Animal animal) {
         if (!animalDAO.getById(animal.getId()).isPresent()) {
             throw new NotFoundException("Animal non trouvé avec l'id : " + animal.getId());
@@ -56,11 +63,26 @@ public class AnimalService {
         return animalDAO.update(animal);
     }
 
+    public Animal updateAnimal(Animal animal, int id) {
+        animal.setId(id);
+        return updateAnimal(animal);
+    }
+
     public boolean deleteAnimal(int id) {
         if (!animalDAO.getById(id).isPresent()) {
             throw new NotFoundException("Animal non trouvé avec l'id : " + id);
         }
         return animalDAO.delete(id);
+    }
+
+    public boolean updateHealthStatus(int animalId, String status) {
+        if (!animalDAO.getById(animalId).isPresent()) {
+            throw new NotFoundException("Animal non trouvé avec l'id : " + animalId);
+        }
+        if (status == null || status.isBlank()) {
+            throw new ValidationException("Le statut de santé est obligatoire.");
+        }
+        return animalDAO.updateHealthStatus(animalId, status.trim());
     }
 
     private void validateAnimal(Animal animal) {

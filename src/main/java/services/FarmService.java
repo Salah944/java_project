@@ -2,6 +2,7 @@ package services;
 
 import dao.FarmDAO;
 import dao.FarmDAOImpl;
+import dto.FarmSummaryDTO;
 import exceptions.NotFoundException;
 import exceptions.ValidationException;
 import model.Farm;
@@ -25,6 +26,13 @@ public class FarmService {
                 .orElseThrow(() -> new NotFoundException("Ferme non trouvée avec l'id : " + id));
     }
 
+    public List<Farm> searchFarmByName(String name) {
+        if (name == null || name.isBlank()) {
+            return farmDAO.getAll();
+        }
+        return farmDAO.searchByName(name.trim());
+    }
+
     public Farm updateFarm(Farm farm, int id) {
         if (!farmDAO.getById(id).isPresent()) {
             throw new NotFoundException("Ferme non trouvée avec l'id : " + id);
@@ -38,6 +46,37 @@ public class FarmService {
             throw new NotFoundException("Ferme non trouvée avec l'id : " + id);
         }
         return farmDAO.delete(id);
+    }
+
+    public FarmSummaryDTO getFarmSummary(int farmId) {
+        getFarmById(farmId);
+        return new FarmSummaryDTO(
+                farmId,
+                countAnimals(farmId),
+                countWorkers(farmId),
+                countTasks(farmId),
+                countStocks(farmId)
+        );
+    }
+
+    public long countAnimals(int farmId) {
+        getFarmById(farmId);
+        return farmDAO.countAnimals(farmId);
+    }
+
+    public long countWorkers(int farmId) {
+        getFarmById(farmId);
+        return farmDAO.countWorkers(farmId);
+    }
+
+    public long countTasks(int farmId) {
+        getFarmById(farmId);
+        return farmDAO.countTasks(farmId);
+    }
+
+    public long countStocks(int farmId) {
+        getFarmById(farmId);
+        return farmDAO.countStocks(farmId);
     }
 
     private void validateFarm(Farm farm) {

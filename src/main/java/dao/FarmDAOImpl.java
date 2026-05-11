@@ -70,6 +70,28 @@ public class FarmDAOImpl implements FarmDAO {
     }
 
     @Override
+    public List<Farm> searchByName(String name) {
+        List<Farm> farms = new ArrayList<>();
+        String sql = "SELECT * FROM Farm WHERE LOWER(name) LIKE LOWER(?)";
+        try (Connection cnx = ConnectionDb.getConnection();
+             PreparedStatement stmt = cnx.prepareStatement(sql)) {
+            stmt.setString(1, "%" + name + "%");
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    farms.add(new Farm(
+                            rs.getInt("id"),
+                            rs.getString("name"),
+                            rs.getString("location")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error searching farms by name: " + e.getMessage(), e);
+        }
+        return farms;
+    }
+
+    @Override
     public Farm update(Farm farm, int id) {
         String sql = "UPDATE Farm SET name = ?, location = ? WHERE id = ?";
         try (Connection cnx = ConnectionDb.getConnection();
@@ -94,6 +116,38 @@ public class FarmDAOImpl implements FarmDAO {
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new RuntimeException("Error deleting farm: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public long countAnimals(int farmId) {
+        return countByFarm("SELECT COUNT(*) FROM Animal WHERE farmId = ?", farmId);
+    }
+
+    @Override
+    public long countWorkers(int farmId) {
+        return countByFarm("SELECT COUNT(*) FROM Ouvrier WHERE farm_id = ?", farmId);
+    }
+
+    @Override
+    public long countTasks(int farmId) {
+        return countByFarm("SELECT COUNT(*) FROM Task WHERE farm_id = ?", farmId);
+    }
+
+    @Override
+    public long countStocks(int farmId) {
+        return countByFarm("SELECT COUNT(*) FROM Stock WHERE farm_id = ?", farmId);
+    }
+
+    private long countByFarm(String sql, int farmId) {
+        try (Connection cnx = ConnectionDb.getConnection();
+             PreparedStatement stmt = cnx.prepareStatement(sql)) {
+            stmt.setInt(1, farmId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next() ? rs.getLong(1) : 0;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error counting farm data: " + e.getMessage(), e);
         }
     }
 }

@@ -25,6 +25,14 @@ public class AnimalController {
         return animalService.getAnimalsByFarmId(farmId);
     }
 
+    public List<Animal> getAnimalsByFarmId(int farmId) {
+        return animalService.getAnimalsByFarmId(farmId);
+    }
+
+    public List<Animal> searchAnimalByType(String type) {
+        return animalService.searchAnimalByType(type);
+    }
+
     public Animal getAnimalById(int id) {
         return animalService.getAnimalById(id);
     }
@@ -33,7 +41,15 @@ public class AnimalController {
         return animalService.updateAnimal(animal);
     }
 
+    public Animal updateAnimal(Animal animal, int id) {
+        return animalService.updateAnimal(animal, id);
+    }
+
     public boolean deleteAnimal(int id) {
         return animalService.deleteAnimal(id);
+    }
+
+    public boolean updateHealthStatus(int animalId, String status) {
+        return animalService.updateHealthStatus(animalId, status);
     }
 }

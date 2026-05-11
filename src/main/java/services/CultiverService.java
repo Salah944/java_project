@@ -7,6 +7,9 @@ import dao.FarmDAOImpl;
 import exceptions.NotFoundException;
 import exceptions.ValidationException;
 import model.Cultiver;
+import model.enums.CropStatus;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class CultiverService {
@@ -50,6 +53,23 @@ public class CultiverService {
         return cultiverDAO.delete(id);
     }
 
+    public boolean updateCultiverStatus(int id, String status) {
+        if (!cultiverDAO.getById(id).isPresent()) {
+            throw new NotFoundException("Culture non trouvée avec l'id : " + id);
+        }
+        return cultiverDAO.updateStatus(id, parseStatus(status));
+    }
+
+    public List<Cultiver> calculateHarvestDates() {
+        List<Cultiver> cultivers = cultiverDAO.getAll();
+        for (Cultiver cultiver : cultivers) {
+            if (cultiver.getHervesDate() == null && cultiver.getPlanningDate() != null) {
+                cultiver.setHervesDate(addDays(cultiver.getPlanningDate(), 90));
+            }
+        }
+        return cultivers;
+    }
+
     private void validateCultiver(Cultiver cultiver) {
         if (cultiver.getFarmId() <= 0 || !farmDAO.getById(cultiver.getFarmId()).isPresent()) {
             throw new ValidationException("L'id de la ferme est invalide.");
@@ -66,5 +86,23 @@ public class CultiverService {
         if (cultiver.getStatus() == null) {
             throw new ValidationException("Le statut est obligatoire.");
         }
+    }
+
+    private CropStatus parseStatus(String status) {
+        if (status == null || status.isBlank()) {
+            throw new ValidationException("Le statut est obligatoire.");
+        }
+        try {
+            return CropStatus.valueOf(status.trim().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new ValidationException("Le statut de culture est invalide.");
+        }
+    }
+
+    private Date addDays(Date date, int days) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DAY_OF_MONTH, days);
+        return calendar.getTime();
     }
 }

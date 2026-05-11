@@ -11,7 +11,7 @@ public class StockDAOImpl implements StockDAO {
 
     @Override
     public Stock create(Stock stock) {
-        String sql = "INSERT INTO Stocks (farm_id, type, quantity, date_added) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO Stock (farm_id, type, quantity, dateAdded) VALUES (?, ?, ?, ?)";
         try (Connection cnx = ConnectionDb.getConnection();
              PreparedStatement stmt = cnx.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setInt(1, stock.getFarmId());
@@ -32,23 +32,28 @@ public class StockDAOImpl implements StockDAO {
 
     @Override
     public List<Stock> getAll() {
-        return fetchStocks("SELECT * FROM Stocks", null);
+        return fetchStocks("SELECT * FROM Stock", (Integer) null);
     }
 
     @Override
     public Optional<Stock> getById(int id) {
-        List<Stock> stocks = fetchStocks("SELECT * FROM Stocks WHERE id = ?", id);
+        List<Stock> stocks = fetchStocks("SELECT * FROM Stock WHERE id = ?", id);
         return stocks.isEmpty() ? Optional.empty() : Optional.of(stocks.get(0));
     }
 
     @Override
     public List<Stock> getByFarm(int farmId) {
-        return fetchStocks("SELECT * FROM Stocks WHERE farm_id = ?", farmId);
+        return fetchStocks("SELECT * FROM Stock WHERE farm_id = ?", farmId);
+    }
+
+    @Override
+    public List<Stock> getByType(String type) {
+        return fetchStocks("SELECT * FROM Stock WHERE LOWER(type) LIKE LOWER(?)", "%" + type + "%");
     }
 
     @Override
     public Stock update(Stock stock, int id) {
-        String sql = "UPDATE Stocks SET farm_id = ?, type = ?, quantity = ?, date_added = ? WHERE id = ?";
+        String sql = "UPDATE Stock SET farm_id = ?, type = ?, quantity = ?, dateAdded = ? WHERE id = ?";
         try (Connection cnx = ConnectionDb.getConnection();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
             stmt.setInt(1, stock.getFarmId());
@@ -66,13 +71,26 @@ public class StockDAOImpl implements StockDAO {
 
     @Override
     public boolean delete(int id) {
-        String sql = "DELETE FROM Stocks WHERE id = ?";
+        String sql = "DELETE FROM Stock WHERE id = ?";
         try (Connection cnx = ConnectionDb.getConnection();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
             stmt.setInt(1, id);
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new RuntimeException("Error deleting stock: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public boolean updateQuantity(int stockId, double quantity) {
+        String sql = "UPDATE Stock SET quantity = ? WHERE id = ?";
+        try (Connection cnx = ConnectionDb.getConnection();
+             PreparedStatement stmt = cnx.prepareStatement(sql)) {
+            stmt.setDouble(1, quantity);
+            stmt.setInt(2, stockId);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Error updating stock quantity: " + e.getMessage(), e);
         }
     }
 
@@ -90,7 +108,29 @@ public class StockDAOImpl implements StockDAO {
                             rs.getInt("farm_id"),
                             rs.getString("type"),
                             rs.getDouble("quantity"),
-                            rs.getDate("date_added")
+                            rs.getDate("dateAdded")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error fetching stocks: " + e.getMessage(), e);
+        }
+        return stocks;
+    }
+
+    private List<Stock> fetchStocks(String sql, String param) {
+        List<Stock> stocks = new ArrayList<>();
+        try (Connection cnx = ConnectionDb.getConnection();
+             PreparedStatement stmt = cnx.prepareStatement(sql)) {
+            stmt.setString(1, param);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    stocks.add(new Stock(
+                            rs.getInt("id"),
+                            rs.getInt("farm_id"),
+                            rs.getString("type"),
+                            rs.getDouble("quantity"),
+                            rs.getDate("dateAdded")
                     ));
                 }
             }

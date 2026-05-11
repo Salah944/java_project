@@ -19,6 +19,10 @@ public class StockController {
         return stockService.getStocksByFarm(farmId);
     }
 
+    public List<Stock> searchStockByType(String type) {
+        return stockService.searchStockByType(type);
+    }
+
     public Stock getStockById(int id) {
         return stockService.getStockById(id);
     }
@@ -29,5 +33,21 @@ public class StockController {
 
     public boolean deleteStock(int id) {
         return stockService.deleteStock(id);
+    }
+
+    public Stock addProduct(int stockId, double quantity) {
+        return stockService.addProduct(stockId, quantity);
+    }
+
+    public Stock removeProduct(int stockId, double quantity) {
+        return stockService.removeProduct(stockId, quantity);
+    }
+
+    public boolean checkAvailability(int stockId, double quantity) {
+        return stockService.checkAvailability(stockId, quantity);
+    }
+
+    public boolean isLowStock(int stockId) {
+        return stockService.isLowStock(stockId);
     }
 }

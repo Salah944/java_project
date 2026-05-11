@@ -8,6 +8,11 @@ public interface FarmDAO {
     Farm create(Farm farm);
     List<Farm> getAll();
     Optional<Farm> getById(int id);
+    List<Farm> searchByName(String name);
     Farm update(Farm farm, int id);
     boolean delete(int id);
+    long countAnimals(int farmId);
+    long countWorkers(int farmId);
+    long countTasks(int farmId);
+    long countStocks(int farmId);
 }

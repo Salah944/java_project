@@ -9,6 +9,7 @@ public interface UserDAO {
     List<User> getAll();
     List<User> getAllWorkers();
     Optional<User> getById(int id);
+    Optional<User> getWorkerById(int id);
     Optional<User> findByEmail(String email);
     User update(User user, int id);
     boolean delete(int id);

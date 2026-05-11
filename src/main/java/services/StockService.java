@@ -11,6 +11,8 @@ import java.util.List;
 
 public class StockService {
 
+    private static final double LOW_STOCK_THRESHOLD = 10.0;
+
     private final StockDAO stockDAO = new StockDAOImpl();
     private final FarmDAO farmDAO = new FarmDAOImpl();
 
@@ -35,6 +37,13 @@ public class StockService {
         return stockDAO.getByFarm(farmId);
     }
 
+    public List<Stock> searchStockByType(String type) {
+        if (type == null || type.isBlank()) {
+            return stockDAO.getAll();
+        }
+        return stockDAO.getByType(type.trim());
+    }
+
     public Stock updateStock(Stock stock, int id) {
         if (!stockDAO.getById(id).isPresent()) {
             throw new NotFoundException("Stock non trouvé avec l'id : " + id);
@@ -48,6 +57,36 @@ public class StockService {
             throw new NotFoundException("Stock non trouvé avec l'id : " + id);
         }
         return stockDAO.delete(id);
+    }
+
+    public Stock addProduct(int stockId, double quantity) {
+        validateQuantityToMove(quantity);
+        Stock stock = getStockById(stockId);
+        double newQuantity = stock.getQuantity() + quantity;
+        stockDAO.updateQuantity(stockId, newQuantity);
+        stock.setQuantity(newQuantity);
+        return stock;
+    }
+
+    public Stock removeProduct(int stockId, double quantity) {
+        validateQuantityToMove(quantity);
+        Stock stock = getStockById(stockId);
+        if (stock.getQuantity() < quantity) {
+            throw new ValidationException("Quantité insuffisante en stock.");
+        }
+        double newQuantity = stock.getQuantity() - quantity;
+        stockDAO.updateQuantity(stockId, newQuantity);
+        stock.setQuantity(newQuantity);
+        return stock;
+    }
+
+    public boolean checkAvailability(int stockId, double quantity) {
+        validateQuantityToMove(quantity);
+        return getStockById(stockId).getQuantity() >= quantity;
+    }
+
+    public boolean isLowStock(int stockId) {
+        return getStockById(stockId).getQuantity() <= LOW_STOCK_THRESHOLD;
     }
 
     private void validateStock(Stock stock) {
@@ -65,6 +104,12 @@ public class StockService {
         }
         if (stock.getDateAdded() == null) {
             throw new ValidationException("La date d'ajout est obligatoire.");
+        }
+    }
+
+    private void validateQuantityToMove(double quantity) {
+        if (quantity <= 0) {
+            throw new ValidationException("La quantité doit être supérieure à 0.");
         }
     }
 }

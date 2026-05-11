@@ -1,6 +1,7 @@
 package dao;
 
 import model.Cultiver;
+import model.enums.CropStatus;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,4 +12,5 @@ public interface CultiverDAO {
     List<Cultiver> getByFarm(int farmId);
     Cultiver update(Cultiver cultiver, int id);
     boolean delete(int id);
+    boolean updateStatus(int id, CropStatus status);
 }

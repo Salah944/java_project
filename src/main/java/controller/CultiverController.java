@@ -30,4 +30,12 @@ public class CultiverController {
     public boolean deleteCultiver(int id) {
         return cultiverService.deleteCultiver(id);
     }
+
+    public boolean updateCultiverStatus(int id, String status) {
+        return cultiverService.updateCultiverStatus(id, status);
+    }
+
+    public List<Cultiver> calculateHarvestDates() {
+        return cultiverService.calculateHarvestDates();
+    }
 }

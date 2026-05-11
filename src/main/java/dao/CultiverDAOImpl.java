@@ -12,7 +12,7 @@ public class CultiverDAOImpl implements CultiverDAO {
 
     @Override
     public Cultiver create(Cultiver cultiver) {
-        String sql = "INSERT INTO Cultiver (farm_id, name, planning_date, herves_date, quantity, status) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Cultiver (farm_id, name, plantingDate, harvestDate, quantity, status) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection cnx = ConnectionDb.getConnection();
              PreparedStatement stmt = cnx.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setInt(1, cultiver.getFarmId());
@@ -20,7 +20,7 @@ public class CultiverDAOImpl implements CultiverDAO {
             stmt.setDate(3, new java.sql.Date(cultiver.getPlanningDate().getTime()));
             stmt.setDate(4, cultiver.getHervesDate() != null ? new java.sql.Date(cultiver.getHervesDate().getTime()) : null);
             stmt.setInt(5, cultiver.getQuantity());
-            stmt.setString(6, cultiver.getStatus().name());
+            stmt.setString(6, toDatabaseStatus(cultiver.getStatus()));
             stmt.executeUpdate();
             try (ResultSet keys = stmt.getGeneratedKeys()) {
                 if (keys.next()) cultiver.setId(keys.getInt(1));
@@ -49,7 +49,7 @@ public class CultiverDAOImpl implements CultiverDAO {
 
     @Override
     public Cultiver update(Cultiver cultiver, int id) {
-        String sql = "UPDATE Cultiver SET farm_id = ?, name = ?, planning_date = ?, herves_date = ?, quantity = ?, status = ? WHERE id = ?";
+        String sql = "UPDATE Cultiver SET farm_id = ?, name = ?, plantingDate = ?, harvestDate = ?, quantity = ?, status = ? WHERE id = ?";
         try (Connection cnx = ConnectionDb.getConnection();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
             stmt.setInt(1, cultiver.getFarmId());
@@ -57,7 +57,7 @@ public class CultiverDAOImpl implements CultiverDAO {
             stmt.setDate(3, new java.sql.Date(cultiver.getPlanningDate().getTime()));
             stmt.setDate(4, cultiver.getHervesDate() != null ? new java.sql.Date(cultiver.getHervesDate().getTime()) : null);
             stmt.setInt(5, cultiver.getQuantity());
-            stmt.setString(6, cultiver.getStatus().name());
+            stmt.setString(6, toDatabaseStatus(cultiver.getStatus()));
             stmt.setInt(7, id);
             stmt.executeUpdate();
             cultiver.setId(id);
@@ -79,6 +79,19 @@ public class CultiverDAOImpl implements CultiverDAO {
         }
     }
 
+    @Override
+    public boolean updateStatus(int id, CropStatus status) {
+        String sql = "UPDATE Cultiver SET status = ? WHERE id = ?";
+        try (Connection cnx = ConnectionDb.getConnection();
+             PreparedStatement stmt = cnx.prepareStatement(sql)) {
+            stmt.setString(1, toDatabaseStatus(status));
+            stmt.setInt(2, id);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Error updating crop status: " + e.getMessage(), e);
+        }
+    }
+
     private List<Cultiver> fetchCrops(String sql, Integer param) {
         List<Cultiver> list = new ArrayList<>();
         try (Connection cnx = ConnectionDb.getConnection();
@@ -90,10 +103,10 @@ public class CultiverDAOImpl implements CultiverDAO {
                         rs.getInt("id"),
                         rs.getInt("farm_id"),
                         rs.getString("name"),
-                        rs.getDate("planning_date"),
-                        rs.getDate("herves_date"),
+                        rs.getDate("plantingDate"),
+                        rs.getDate("harvestDate"),
                         rs.getInt("quantity"),
-                        CropStatus.valueOf(rs.getString("status").trim().toUpperCase())
+                        fromDatabaseStatus(rs.getString("status"))
                     ));
                 }
             }
@@ -101,6 +114,41 @@ public class CultiverDAOImpl implements CultiverDAO {
             throw new RuntimeException("Error fetching crops: " + e.getMessage(), e);
         }
         return list;
+    }
+
+    private String toDatabaseStatus(CropStatus status) {
+        switch (status) {
+            case PLANTED:
+            case GROWING:
+                return "En cours";
+            case HARVESTED:
+                return "R\u00E9colt\u00E9";
+            case FAILED:
+                return "Abandonn\u00E9";
+            default:
+                throw new IllegalArgumentException("Unsupported crop status for database: " + status);
+        }
+    }
+
+    private CropStatus fromDatabaseStatus(String status) {
+        if (status == null) {
+            return null;
+        }
+        String normalized = status.trim();
+        if (normalized.equalsIgnoreCase("En cours") ||
+                normalized.equalsIgnoreCase("PLANTED") ||
+                normalized.equalsIgnoreCase("GROWING")) {
+            return CropStatus.GROWING;
+        }
+        if (normalized.equalsIgnoreCase("R\u00E9colt\u00E9") ||
+                normalized.equalsIgnoreCase("HARVESTED")) {
+            return CropStatus.HARVESTED;
+        }
+        if (normalized.equalsIgnoreCase("Abandonn\u00E9") ||
+                normalized.equalsIgnoreCase("FAILED")) {
+            return CropStatus.FAILED;
+        }
+        throw new IllegalArgumentException("Unknown crop status from database: " + status);
     }
 }
 

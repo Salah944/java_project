@@ -20,6 +20,22 @@ public class TaskController {
         return taskService.getTaskById(id);
     }
 
+    public List<Task> getTasksByWorker(int workerId) {
+        return taskService.getTasksByWorker(workerId);
+    }
+
+    public List<Task> getTasksByFarm(int farmId) {
+        return taskService.getTasksByFarm(farmId);
+    }
+
+    public List<Task> getTasksByStatus(TaskStatus status) {
+        return taskService.getTasksByStatus(status);
+    }
+
+    public List<Task> searchTaskByStatus(TaskStatus status) {
+        return taskService.searchTaskByStatus(status);
+    }
+
     public Task updateTask(Task task, int id) {
         return taskService.updateTask(task, id);
     }

@@ -19,7 +19,8 @@ public class User {
         this.role = role;
     }
 
-    public User(int id, String name, String email, String password, String name1) {
+    public User(int id, String name, String email, String password, String role) {
+        this(id, name, email, password, Role.valueOf(role.trim().toUpperCase()));
     }
 
     public int getId() { return id; }

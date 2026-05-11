@@ -2,12 +2,13 @@ package services;
 
 import dao.TaskDAO;
 import dao.TaskDAOImpl;
-import dao.UserDAO;
-import dao.UserDAOImpl;
+import dao.OuvrierDAO;
+import dao.OuvrierDAOImpl;
 import dao.FarmDAO;
 import dao.FarmDAOImpl;
 import exceptions.NotFoundException;
 import exceptions.ValidationException;
+import model.Ouvrier;
 import model.Task;
 import model.enums.TaskStatus;
 import java.util.List;
@@ -15,12 +16,12 @@ import java.util.List;
 public class TaskService {
 
     private final TaskDAO taskDAO = new TaskDAOImpl();
-    private final UserDAO userDAO = new UserDAOImpl();
+    private final OuvrierDAO ouvrierDAO = new OuvrierDAOImpl();
     private final FarmDAO farmDAO = new FarmDAOImpl();
 
     public Task createTask(Task task) {
-        validateTask(task);
         if (task.getStatus() == null) task.setStatus(TaskStatus.PENDING);
+        validateTask(task);
         return taskDAO.create(task);
     }
 
@@ -31,6 +32,29 @@ public class TaskService {
     public Task getTaskById(int id) {
         return taskDAO.getById(id)
                 .orElseThrow(() -> new NotFoundException("Tâche non trouvée avec l'id : " + id));
+    }
+
+    public List<Task> getTasksByWorker(int workerId) {
+        if (!ouvrierDAO.getById(workerId).isPresent()) {
+            throw new NotFoundException("Ouvrier non trouvé avec l'id : " + workerId);
+        }
+        return taskDAO.getByWorker(workerId);
+    }
+
+    public List<Task> getTasksByFarm(int farmId) {
+        if (!farmDAO.getById(farmId).isPresent()) {
+            throw new NotFoundException("Ferme non trouvée avec l'id : " + farmId);
+        }
+        return taskDAO.getByFarm(farmId);
+    }
+
+    public List<Task> getTasksByStatus(TaskStatus status) {
+        validateSupportedStatus(status);
+        return taskDAO.getByStatus(status);
+    }
+
+    public List<Task> searchTaskByStatus(TaskStatus status) {
+        return getTasksByStatus(status);
     }
 
     public Task updateTask(Task task, int id) {
@@ -49,12 +73,11 @@ public class TaskService {
     }
 
     public boolean assignTaskToWorker(int taskId, int workerId) {
-        if (!taskDAO.getById(taskId).isPresent()) {
+        Task task = taskDAO.getById(taskId).orElse(null);
+        if (task == null) {
             throw new NotFoundException("Tâche non trouvée avec l'id : " + taskId);
         }
-        if (!userDAO.getById(workerId).isPresent()) {
-            throw new NotFoundException("Ouvrier non trouvé avec l'id : " + workerId);
-        }
+        validateAssignedWorker(workerId, task.getFarmId());
         return taskDAO.assignWorker(taskId, workerId);
     }
 
@@ -62,6 +85,7 @@ public class TaskService {
         if (!taskDAO.getById(taskId).isPresent()) {
             throw new NotFoundException("Tâche non trouvée avec l'id : " + taskId);
         }
+        validateSupportedStatus(status);
         return taskDAO.updateStatus(taskId, status);
     }
 
@@ -77,6 +101,27 @@ public class TaskService {
         }
         if (task.getDueDate() == null) {
             throw new ValidationException("La date d'échéance est obligatoire.");
+        }
+        validateSupportedStatus(task.getStatus());
+        if (task.getWorkerId() != null) {
+            validateAssignedWorker(task.getWorkerId(), task.getFarmId());
+        }
+    }
+
+    private void validateAssignedWorker(int workerId, int farmId) {
+        Ouvrier ouvrier = ouvrierDAO.getById(workerId)
+                .orElseThrow(() -> new NotFoundException("Ouvrier non trouvé avec l'id : " + workerId));
+        if (ouvrier.getFarmId() != farmId) {
+            throw new ValidationException("L'ouvrier n'appartient pas a cette ferme.");
+        }
+    }
+
+    private void validateSupportedStatus(TaskStatus status) {
+        if (status == null) {
+            throw new ValidationException("Le statut de tâche est obligatoire.");
+        }
+        if (status == TaskStatus.CANCELLED) {
+            throw new ValidationException("Le statut CANCELLED n'est pas autorisé par la base de données.");
         }
     }
 }

@@ -9,6 +9,8 @@ public interface StockDAO {
     List<Stock> getAll();
     Optional<Stock> getById(int id);
     List<Stock> getByFarm(int farmId);
+    List<Stock> getByType(String type);
     Stock update(Stock stock, int id);
     boolean delete(int id);
+    boolean updateQuantity(int stockId, double quantity);
 }

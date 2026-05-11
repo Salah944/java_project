@@ -46,6 +46,12 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
+    public Optional<User> getWorkerById(int id) {
+        List<User> users = fetchUsers("SELECT * FROM Users WHERE id = ? AND role = 'OUVRIER'", id);
+        return users.isEmpty() ? Optional.empty() : Optional.of(users.get(0));
+    }
+
+    @Override
     public Optional<User> findByEmail(String email) {
         String sql = "SELECT * FROM Users WHERE email = ?";
         try (Connection cnx = ConnectionDb.getConnection();

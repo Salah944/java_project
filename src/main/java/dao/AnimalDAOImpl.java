@@ -13,8 +13,8 @@ public class AnimalDAOImpl implements AnimalDAO {
 
     @Override
     public Vache addVache(Vache vache) {
-        String animalSql = "INSERT INTO Animals (farm_id, age, healthStatus, type) VALUES (?, ?, ?, 'VACHE')";
-        String vacheSql = "INSERT INTO Vaches (animal_id, milkProduction) VALUES (?, ?)";
+        String animalSql = "INSERT INTO Animal (farmId, age, healthStatus, type) VALUES (?, ?, ?, 'VACHE')";
+        String vacheSql = "INSERT INTO Vache (animal_id, milkProduction) VALUES (?, ?)";
 
         try (Connection cnx = ConnectionDb.getConnection()) {
             cnx.setAutoCommit(false);
@@ -49,8 +49,8 @@ public class AnimalDAOImpl implements AnimalDAO {
 
     @Override
     public Poulet addPoulet(Poulet poulet) {
-        String animalSql = "INSERT INTO Animals (farm_id, age, healthStatus, type) VALUES (?, ?, ?, 'POULET')";
-        String pouletSql = "INSERT INTO Poulets (animal_id, eggProduction) VALUES (?, ?)";
+        String animalSql = "INSERT INTO Animal (farmId, age, healthStatus, type) VALUES (?, ?, ?, 'POULET')";
+        String pouletSql = "INSERT INTO Poulet (animal_id, eggProduction) VALUES (?, ?)";
 
         try (Connection cnx = ConnectionDb.getConnection()) {
             cnx.setAutoCommit(false);
@@ -85,23 +85,28 @@ public class AnimalDAOImpl implements AnimalDAO {
 
     @Override
     public List<Animal> getAll() {
-        return fetchAnimals("SELECT a.*, v.milkProduction, p.eggProduction FROM Animals a LEFT JOIN Vaches v ON a.id = v.animal_id LEFT JOIN Poulets p ON a.id = p.animal_id", null);
+        return fetchAnimals("SELECT a.*, v.milkProduction, p.eggProduction FROM Animal a LEFT JOIN Vache v ON a.id = v.animal_id LEFT JOIN Poulet p ON a.id = p.animal_id", (Integer) null);
     }
 
     @Override
     public List<Animal> getByFarm(int farmId) {
-        return fetchAnimals("SELECT a.*, v.milkProduction, p.eggProduction FROM Animals a LEFT JOIN Vaches v ON a.id = v.animal_id LEFT JOIN Poulets p ON a.id = p.animal_id WHERE a.farm_id = ?", farmId);
+        return fetchAnimals("SELECT a.*, v.milkProduction, p.eggProduction FROM Animal a LEFT JOIN Vache v ON a.id = v.animal_id LEFT JOIN Poulet p ON a.id = p.animal_id WHERE a.farmId = ?", farmId);
+    }
+
+    @Override
+    public List<Animal> getByType(String type) {
+        return fetchAnimals("SELECT a.*, v.milkProduction, p.eggProduction FROM Animal a LEFT JOIN Vache v ON a.id = v.animal_id LEFT JOIN Poulet p ON a.id = p.animal_id WHERE UPPER(a.type) = UPPER(?)", type);
     }
 
     @Override
     public Optional<Animal> getById(int id) {
-        List<Animal> animals = fetchAnimals("SELECT a.*, v.milkProduction, p.eggProduction FROM Animals a LEFT JOIN Vaches v ON a.id = v.animal_id LEFT JOIN Poulets p ON a.id = p.animal_id WHERE a.id = ?", id);
+        List<Animal> animals = fetchAnimals("SELECT a.*, v.milkProduction, p.eggProduction FROM Animal a LEFT JOIN Vache v ON a.id = v.animal_id LEFT JOIN Poulet p ON a.id = p.animal_id WHERE a.id = ?", id);
         return animals.isEmpty() ? Optional.empty() : Optional.of(animals.get(0));
     }
 
     @Override
     public Animal update(Animal animal) {
-        String animalSql = "UPDATE Animals SET age = ?, healthStatus = ? WHERE id = ?";
+        String animalSql = "UPDATE Animal SET age = ?, healthStatus = ? WHERE id = ?";
         try (Connection cnx = ConnectionDb.getConnection()) {
             cnx.setAutoCommit(false);
             try (PreparedStatement stmt = cnx.prepareStatement(animalSql)) {
@@ -111,13 +116,13 @@ public class AnimalDAOImpl implements AnimalDAO {
                 stmt.executeUpdate();
 
                 if (animal instanceof Vache) {
-                    try (PreparedStatement vacheStmt = cnx.prepareStatement("UPDATE Vaches SET milkProduction = ? WHERE animal_id = ?")) {
+                    try (PreparedStatement vacheStmt = cnx.prepareStatement("UPDATE Vache SET milkProduction = ? WHERE animal_id = ?")) {
                         vacheStmt.setDouble(1, ((Vache) animal).getMilkProduction());
                         vacheStmt.setInt(2, animal.getId());
                         vacheStmt.executeUpdate();
                     }
                 } else if (animal instanceof Poulet) {
-                    try (PreparedStatement pouletStmt = cnx.prepareStatement("UPDATE Poulets SET eggProduction = ? WHERE animal_id = ?")) {
+                    try (PreparedStatement pouletStmt = cnx.prepareStatement("UPDATE Poulet SET eggProduction = ? WHERE animal_id = ?")) {
                         pouletStmt.setInt(1, ((Poulet) animal).getEggProduction());
                         pouletStmt.setInt(2, animal.getId());
                         pouletStmt.executeUpdate();
@@ -135,14 +140,45 @@ public class AnimalDAOImpl implements AnimalDAO {
     }
 
     @Override
+    public Animal update(Animal animal, int id) {
+        animal.setId(id);
+        return update(animal);
+    }
+
+    @Override
     public boolean delete(int id) {
-        String sql = "DELETE FROM Animals WHERE id = ?";
-        try (Connection cnx = ConnectionDb.getConnection();
-             PreparedStatement stmt = cnx.prepareStatement(sql)) {
-            stmt.setInt(1, id);
-            return stmt.executeUpdate() > 0;
+        try (Connection cnx = ConnectionDb.getConnection()) {
+            cnx.setAutoCommit(false);
+            try (PreparedStatement vacheStmt = cnx.prepareStatement("DELETE FROM Vache WHERE animal_id = ?");
+                 PreparedStatement pouletStmt = cnx.prepareStatement("DELETE FROM Poulet WHERE animal_id = ?");
+                 PreparedStatement animalStmt = cnx.prepareStatement("DELETE FROM Animal WHERE id = ?")) {
+                vacheStmt.setInt(1, id);
+                vacheStmt.executeUpdate();
+                pouletStmt.setInt(1, id);
+                pouletStmt.executeUpdate();
+                animalStmt.setInt(1, id);
+                boolean deleted = animalStmt.executeUpdate() > 0;
+                cnx.commit();
+                return deleted;
+            } catch (SQLException e) {
+                cnx.rollback();
+                throw e;
+            }
         } catch (SQLException e) {
             throw new RuntimeException("Error deleting animal: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public boolean updateHealthStatus(int animalId, String status) {
+        String sql = "UPDATE Animal SET healthStatus = ? WHERE id = ?";
+        try (Connection cnx = ConnectionDb.getConnection();
+             PreparedStatement stmt = cnx.prepareStatement(sql)) {
+            stmt.setString(1, status);
+            stmt.setInt(2, animalId);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Error updating animal health status: " + e.getMessage(), e);
         }
     }
 
@@ -157,7 +193,35 @@ public class AnimalDAOImpl implements AnimalDAO {
                 while (rs.next()) {
                     String type = rs.getString("type");
                     int id = rs.getInt("id");
-                    int farmId = rs.getInt("farm_id");
+                    int farmId = rs.getInt("farmId");
+                    int age = rs.getInt("age");
+                    String healthStatus = rs.getString("healthStatus");
+
+                    if ("VACHE".equalsIgnoreCase(type)) {
+                        animals.add(new Vache(id, farmId, age, healthStatus, rs.getDouble("milkProduction")));
+                    } else if ("POULET".equalsIgnoreCase(type)) {
+                        animals.add(new Poulet(id, farmId, age, healthStatus, rs.getInt("eggProduction")));
+                    } else {
+                        animals.add(new Animal(id, farmId, age, healthStatus, type));
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error fetching animals: " + e.getMessage(), e);
+        }
+        return animals;
+    }
+
+    private List<Animal> fetchAnimals(String sql, String param) {
+        List<Animal> animals = new ArrayList<>();
+        try (Connection cnx = ConnectionDb.getConnection();
+             PreparedStatement stmt = cnx.prepareStatement(sql)) {
+            stmt.setString(1, param);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    String type = rs.getString("type");
+                    int id = rs.getInt("id");
+                    int farmId = rs.getInt("farmId");
                     int age = rs.getInt("age");
                     String healthStatus = rs.getString("healthStatus");
 
