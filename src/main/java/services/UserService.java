@@ -6,11 +6,9 @@ import exceptions.NotFoundException;
 import model.User;
 import util.PasswordHasher;
 import util.ValidationUtils;
-
 import java.util.List;
 
 public class UserService {
-
     private final UserDAO userDAO = new UserDAOImpl();
 
     public User createUser(User user) {
@@ -19,23 +17,15 @@ public class UserService {
         return userDAO.create(user);
     }
 
-    public List<User> getAllUsers() {
-        return userDAO.getAll();
-    }
-
-    public List<User> getAllWorkers() {
-        return userDAO.getAllWorkers();
-    }
+    public List<User> getAllUsers() { return userDAO.getAll(); }
+    public List<User> getAllWorkers() { return userDAO.getAllWorkers(); }
 
     public User getUserById(int id) {
-        return userDAO.getById(id)
-                .orElseThrow(() -> new NotFoundException("Utilisateur non trouvé avec l'id : " + id));
+        return userDAO.getById(id).orElseThrow(() -> new NotFoundException("Utilisateur non trouvé."));
     }
 
     public User updateUser(User user, int id) {
-        if (!userDAO.getById(id).isPresent()) {
-            throw new NotFoundException("Utilisateur non trouvé avec l'id : " + id);
-        }
+        if (!userDAO.getById(id).isPresent()) throw new NotFoundException("Utilisateur non trouvé.");
         validateUser(user);
         if (user.getPassword() != null && !user.getPassword().startsWith("$2a$")) {
             user.setPassword(PasswordHasher.hashPassword(user.getPassword()));
@@ -44,9 +34,7 @@ public class UserService {
     }
 
     public boolean deleteUser(int id) {
-        if (!userDAO.getById(id).isPresent()) {
-            throw new NotFoundException("Utilisateur non trouvé avec l'id : " + id);
-        }
+        if (!userDAO.getById(id).isPresent()) throw new NotFoundException("Utilisateur non trouvé.");
         return userDAO.delete(id);
     }
 
@@ -54,6 +42,6 @@ public class UserService {
         ValidationUtils.validateNotEmpty(user.getName(), "nom");
         ValidationUtils.validateEmail(user.getEmail());
         ValidationUtils.validateMinLength(user.getPassword(), 4, "mot de passe");
-        ValidationUtils.validateNotEmpty(user.getRole(), "rôle");
+        if (user.getRole() == null) throw new exceptions.ValidationException("Le rôle est obligatoire.");
     }
 }

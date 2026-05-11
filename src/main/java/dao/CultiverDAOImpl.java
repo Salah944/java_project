@@ -1,135 +1,105 @@
-package dao;
+﻿package dao;
 
 import database.ConnectionDb;
 import model.Cultiver;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import model.enums.CropStatus;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class CultiverDAOImpl implements CultiverDAO {
 
     @Override
-    public void create(Cultiver cultiver) {
-        try {
-            Connection cnx = ConnectionDb.getConnection();
-            PreparedStatement stmt = cnx.prepareStatement(
-                    "INSERT INTO Cultiver (name, planning_date, herves_date, quantity, status) VALUES (?, ?, ?, ?, ?)"
-            );
-            stmt.setString(1, cultiver.getName());
-            stmt.setDate(2, new java.sql.Date(cultiver.getPlanningDate().getTime()));
-            stmt.setDate(3, new java.sql.Date(cultiver.getHervesDate().getTime()));
-            stmt.setInt(4, cultiver.getQuantity());
-            stmt.setString(5, cultiver.getStatus());
-
-            int rows = stmt.executeUpdate();
-            if (rows > 0) System.out.println("Culture créée avec succès.");
-            else          System.out.println("Echec de création.");
-
-            ConnectionDb.closecnx(cnx);
+    public Cultiver create(Cultiver cultiver) {
+        String sql = "INSERT INTO Cultiver (farm_id, name, planning_date, herves_date, quantity, status) VALUES (?, ?, ?, ?, ?, ?)";
+        try (Connection cnx = ConnectionDb.getConnection();
+             PreparedStatement stmt = cnx.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setInt(1, cultiver.getFarmId());
+            stmt.setString(2, cultiver.getName());
+            stmt.setDate(3, new java.sql.Date(cultiver.getPlanningDate().getTime()));
+            stmt.setDate(4, cultiver.getHervesDate() != null ? new java.sql.Date(cultiver.getHervesDate().getTime()) : null);
+            stmt.setInt(5, cultiver.getQuantity());
+            stmt.setString(6, cultiver.getStatus().name());
+            stmt.executeUpdate();
+            try (ResultSet keys = stmt.getGeneratedKeys()) {
+                if (keys.next()) cultiver.setId(keys.getInt(1));
+            }
+            return cultiver;
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            throw new RuntimeException("Error creating crop: " + e.getMessage(), e);
         }
     }
 
     @Override
     public List<Cultiver> getAll() {
-        List<Cultiver> list = new ArrayList<>();
-        try {
-            Connection cnx = ConnectionDb.getConnection();
-            PreparedStatement stmt = cnx.prepareStatement("SELECT * FROM Cultiver");
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                list.add(new Cultiver(
-                        rs.getInt("id"),
-                        rs.getString("name"),
-                        rs.getDate("planning_date"),   // java.sql.Date ✓
-                        rs.getDate("herves_date"),      // java.sql.Date ✓
-                        rs.getInt("quantity"),
-                        rs.getString("status")
-                ));
-            }
-
-            ConnectionDb.closecnx(cnx);
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-        return list;
+        return fetchCrops("SELECT * FROM Cultiver", null);
     }
 
     @Override
-    public Cultiver getById(int id) {
-        Cultiver cultiver = null;
-        try {
-            Connection cnx = ConnectionDb.getConnection();
-            PreparedStatement stmt = cnx.prepareStatement(
-                    "SELECT * FROM Cultiver WHERE id = ?"
-            );
-            stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
+    public Optional<Cultiver> getById(int id) {
+        List<Cultiver> list = fetchCrops("SELECT * FROM Cultiver WHERE id = ?", id);
+        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
+    }
 
-            if (rs.next()) {
-                cultiver = new Cultiver(
+    @Override
+    public List<Cultiver> getByFarm(int farmId) {
+        return fetchCrops("SELECT * FROM Cultiver WHERE farm_id = ?", farmId);
+    }
+
+    @Override
+    public Cultiver update(Cultiver cultiver, int id) {
+        String sql = "UPDATE Cultiver SET farm_id = ?, name = ?, planning_date = ?, herves_date = ?, quantity = ?, status = ? WHERE id = ?";
+        try (Connection cnx = ConnectionDb.getConnection();
+             PreparedStatement stmt = cnx.prepareStatement(sql)) {
+            stmt.setInt(1, cultiver.getFarmId());
+            stmt.setString(2, cultiver.getName());
+            stmt.setDate(3, new java.sql.Date(cultiver.getPlanningDate().getTime()));
+            stmt.setDate(4, cultiver.getHervesDate() != null ? new java.sql.Date(cultiver.getHervesDate().getTime()) : null);
+            stmt.setInt(5, cultiver.getQuantity());
+            stmt.setString(6, cultiver.getStatus().name());
+            stmt.setInt(7, id);
+            stmt.executeUpdate();
+            cultiver.setId(id);
+            return cultiver;
+        } catch (SQLException e) {
+            throw new RuntimeException("Error updating crop: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public boolean delete(int id) {
+        String sql = "DELETE FROM Cultiver WHERE id = ?";
+        try (Connection cnx = ConnectionDb.getConnection();
+             PreparedStatement stmt = cnx.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Error deleting crop: " + e.getMessage(), e);
+        }
+    }
+
+    private List<Cultiver> fetchCrops(String sql, Integer param) {
+        List<Cultiver> list = new ArrayList<>();
+        try (Connection cnx = ConnectionDb.getConnection();
+             PreparedStatement stmt = cnx.prepareStatement(sql)) {
+            if (param != null) stmt.setInt(1, param);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    list.add(new Cultiver(
                         rs.getInt("id"),
+                        rs.getInt("farm_id"),
                         rs.getString("name"),
                         rs.getDate("planning_date"),
                         rs.getDate("herves_date"),
                         rs.getInt("quantity"),
-                        rs.getString("status")
-                );
+                        CropStatus.valueOf(rs.getString("status"))
+                    ));
+                }
             }
-
-            ConnectionDb.closecnx(cnx);
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            throw new RuntimeException("Error fetching crops: " + e.getMessage(), e);
         }
-        return cultiver;
-    }
-
-    @Override
-    public void update(Cultiver cultiver, int id) {
-        try {
-            Connection cnx = ConnectionDb.getConnection();
-            PreparedStatement stmt = cnx.prepareStatement(
-                    "UPDATE Cultiver SET name = ?, planning_date = ?, herves_date = ?, quantity = ?, status = ? WHERE id = ?"
-            );
-            stmt.setString(1, cultiver.getName());
-            stmt.setDate(2, new java.sql.Date(cultiver.getPlanningDate().getTime()));
-            stmt.setDate(3, new java.sql.Date(cultiver.getHervesDate().getTime()));
-            stmt.setInt(4, cultiver.getQuantity());
-            stmt.setString(5, cultiver.getStatus());
-            stmt.setInt(6, id);
-
-            int rows = stmt.executeUpdate();
-            if (rows > 0) System.out.println("Culture mise à jour.");
-            else          System.out.println("Echec de mise à jour.");
-
-            ConnectionDb.closecnx(cnx);
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    @Override
-    public void delete(int id) {
-        try {
-            Connection cnx = ConnectionDb.getConnection();
-            PreparedStatement stmt = cnx.prepareStatement(
-                    "DELETE FROM Cultiver WHERE id = ?"
-            );
-            stmt.setInt(1, id);
-
-            int rows = stmt.executeUpdate();
-            if (rows > 0) System.out.println("Culture supprimée.");
-            else          System.out.println("Echec de suppression.");
-
-            ConnectionDb.closecnx(cnx);
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+        return list;
     }
 }

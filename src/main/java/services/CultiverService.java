@@ -1,29 +1,22 @@
-package services;
+﻿package services;
 
 import dao.CultiverDAO;
 import dao.CultiverDAOImpl;
+import dao.FarmDAO;
+import dao.FarmDAOImpl;
+import exceptions.NotFoundException;
+import exceptions.ValidationException;
 import model.Cultiver;
-
 import java.util.List;
 
 public class CultiverService {
 
     private final CultiverDAO cultiverDAO = new CultiverDAOImpl();
+    private final FarmDAO farmDAO = new FarmDAOImpl();
 
-    public void createCultiver(Cultiver cultiver) {
-        if (cultiver.getName() == null || cultiver.getName().isEmpty()) {
-            System.out.println("Erreur : le nom est obligatoire.");
-            return;
-        }
-        if (cultiver.getPlanningDate() == null) {
-            System.out.println("Erreur : la date de plantation est obligatoire.");
-            return;
-        }
-        if (cultiver.getQuantity() <= 0) {
-            System.out.println("Erreur : la quantité doit être positive.");
-            return;
-        }
-        cultiverDAO.create(cultiver);
+    public Cultiver createCultiver(Cultiver cultiver) {
+        validateCultiver(cultiver);
+        return cultiverDAO.create(cultiver);
     }
 
     public List<Cultiver> getAllCultivers() {
@@ -31,26 +24,47 @@ public class CultiverService {
     }
 
     public Cultiver getCultiverById(int id) {
-        if (id <= 0) {
-            System.out.println("Erreur : id invalide.");
-            return null;
-        }
-        return cultiverDAO.getById(id);
+        return cultiverDAO.getById(id)
+                .orElseThrow(() -> new NotFoundException("Culture non trouvée avec l'id : " + id));
     }
 
-    public void updateCultiver(Cultiver cultiver, int id) {
-        if (id <= 0) {
-            System.out.println("Erreur : id invalide.");
-            return;
+    public List<Cultiver> getCultiversByFarm(int farmId) {
+        if (!farmDAO.getById(farmId).isPresent()) {
+            throw new NotFoundException("Ferme non trouvée avec l'id : " + farmId);
         }
-        cultiverDAO.update(cultiver, id);
+        return cultiverDAO.getByFarm(farmId);
     }
 
-    public void deleteCultiver(int id) {
-        if (id <= 0) {
-            System.out.println("Erreur : id invalide.");
-            return;
+    public Cultiver updateCultiver(Cultiver cultiver, int id) {
+        if (!cultiverDAO.getById(id).isPresent()) {
+            throw new NotFoundException("Culture non trouvée avec l'id : " + id);
         }
-        cultiverDAO.delete(id);
+        validateCultiver(cultiver);
+        return cultiverDAO.update(cultiver, id);
+    }
+
+    public boolean deleteCultiver(int id) {
+        if (!cultiverDAO.getById(id).isPresent()) {
+            throw new NotFoundException("Culture non trouvée avec l'id : " + id);
+        }
+        return cultiverDAO.delete(id);
+    }
+
+    private void validateCultiver(Cultiver cultiver) {
+        if (cultiver.getFarmId() <= 0 || !farmDAO.getById(cultiver.getFarmId()).isPresent()) {
+            throw new ValidationException("L'id de la ferme est invalide.");
+        }
+        if (cultiver.getName() == null || cultiver.getName().isBlank()) {
+            throw new ValidationException("Le nom de la culture est obligatoire.");
+        }
+        if (cultiver.getPlanningDate() == null) {
+            throw new ValidationException("La date de plantation est obligatoire.");
+        }
+        if (cultiver.getQuantity() <= 0) {
+            throw new ValidationException("La quantité doit être supérieure à 0.");
+        }
+        if (cultiver.getStatus() == null) {
+            throw new ValidationException("Le statut est obligatoire.");
+        }
     }
 }

@@ -1,5 +1,4 @@
-﻿import controller.*;
-import dto.UserResponseDTO;
+﻿import dto.UserResponseDTO;
 import exceptions.BusinessException;
 import model.Farm;
 import model.Poulet;
@@ -13,10 +12,10 @@ import java.util.Scanner;
 public class Main {
 
     private static final Scanner SCANNER = new Scanner(System.in);
-    private static final AuthController AUTH_CONTROLLER = new AuthController();
-    private static final UserController USER_CONTROLLER = new UserController();
-    private static final FarmController FARM_CONTROLLER = new FarmController();
-    private static final AnimalController ANIMAL_CONTROLLER = new AnimalController();
+    private static final controller.AuthController AUTH_CONTROLLER = new controller.AuthController();
+    private static final controller.UserController USER_CONTROLLER = new controller.UserController();
+    private static final controller.FarmController FARM_CONTROLLER = new controller.FarmController();
+    private static final controller.AnimalController ANIMAL_CONTROLLER = new controller.AnimalController();
 
     public static void main(String[] args) {
         boolean running = true;

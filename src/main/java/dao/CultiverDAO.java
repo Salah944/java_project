@@ -1,12 +1,14 @@
-package dao;
+﻿package dao;
 
 import model.Cultiver;
 import java.util.List;
+import java.util.Optional;
 
 public interface CultiverDAO {
-    void create(Cultiver cultiver);
+    Cultiver create(Cultiver cultiver);
     List<Cultiver> getAll();
-    Cultiver getById(int id);
-    void update(Cultiver cultiver, int id);
-    void delete(int id);
+    Optional<Cultiver> getById(int id);
+    List<Cultiver> getByFarm(int farmId);
+    Cultiver update(Cultiver cultiver, int id);
+    boolean delete(int id);
 }
