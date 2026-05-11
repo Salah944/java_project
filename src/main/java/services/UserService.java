@@ -23,7 +23,7 @@ public class UserService {
     public List<User> getAllWorkers() { return userDAO.getAllWorkers(); }
 
     public User getUserById(int id) {
-        return userDAO.getById(id).orElseThrow(() -> new NotFoundException("Utilisateur non trouvé."));
+        return userDAO.getById(id).orElseThrow(() -> new NotFoundException("Utilisateur non trouve."));
     }
 
     public User createWorker(User worker) {
@@ -32,7 +32,7 @@ public class UserService {
     }
 
     public User getWorkerById(int id) {
-        return userDAO.getWorkerById(id).orElseThrow(() -> new NotFoundException("Ouvrier non trouvé."));
+        return userDAO.getWorkerById(id).orElseThrow(() -> new NotFoundException("Ouvrier non trouve."));
     }
 
     public User updateWorker(User worker, int id) {
@@ -47,20 +47,30 @@ public class UserService {
 
     public User searchUserByEmail(String email) {
         ValidationUtils.validateEmail(email);
-        return userDAO.findByEmail(email).orElseThrow(() -> new NotFoundException("Utilisateur non trouvé."));
+        return userDAO.findByEmail(email).orElseThrow(() -> new NotFoundException("Utilisateur non trouve."));
+    }
+
+    public List<User> searchUsersByEmail(String email) {
+        if (email == null || email.isBlank()) {
+            return userDAO.getAll();
+        }
+        return userDAO.searchByEmail(email.trim());
     }
 
     public User updateUser(User user, int id) {
-        if (!userDAO.getById(id).isPresent()) throw new NotFoundException("Utilisateur non trouvé.");
-        validateUser(user);
-        if (user.getPassword() != null && !user.getPassword().startsWith("$2a$")) {
+        User existing = userDAO.getById(id).orElseThrow(() -> new NotFoundException("Utilisateur non trouve."));
+        validateUserForUpdate(user);
+        if (user.getPassword() == null || user.getPassword().isBlank()) {
+            user.setPassword(existing.getPassword());
+        } else if (!PasswordHasher.isHashedPassword(user.getPassword())) {
+            ValidationUtils.validateMinLength(user.getPassword(), 4, "mot de passe");
             user.setPassword(PasswordHasher.hashPassword(user.getPassword()));
         }
         return userDAO.update(user, id);
     }
 
     public boolean deleteUser(int id) {
-        if (!userDAO.getById(id).isPresent()) throw new NotFoundException("Utilisateur non trouvé.");
+        if (!userDAO.getById(id).isPresent()) throw new NotFoundException("Utilisateur non trouve.");
         return userDAO.delete(id);
     }
 
@@ -68,6 +78,12 @@ public class UserService {
         ValidationUtils.validateNotEmpty(user.getName(), "nom");
         ValidationUtils.validateEmail(user.getEmail());
         ValidationUtils.validateMinLength(user.getPassword(), 4, "mot de passe");
-        if (user.getRole() == null) throw new ValidationException("Le rôle est obligatoire.");
+        if (user.getRole() == null) throw new ValidationException("Le role est obligatoire.");
+    }
+
+    private void validateUserForUpdate(User user) {
+        ValidationUtils.validateNotEmpty(user.getName(), "nom");
+        ValidationUtils.validateEmail(user.getEmail());
+        if (user.getRole() == null) throw new ValidationException("Le role est obligatoire.");
     }
 }

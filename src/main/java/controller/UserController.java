@@ -35,6 +35,10 @@ public class UserController {
         return userService.searchUserByEmail(email);
     }
 
+    public List<User> searchUsersByEmail(String email) {
+        return userService.searchUsersByEmail(email);
+    }
+
     public User updateUser(User user, int id) {
         return userService.updateUser(user, id);
     }

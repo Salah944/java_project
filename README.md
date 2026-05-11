@@ -1,107 +1,56 @@
 # Java Project - Farm Management
 
-## Description
+Application Java de gestion agricole avec architecture en couches et persistance SQL Server via JDBC.
 
-Ce projet est une application Java console pour la gestion simple d'une ferme.
-Il utilise JDBC pour communiquer avec une base de donnees SQL Server.
-
-L'application permet actuellement de gerer les elements suivants :
-
-- authentification d'un utilisateur
-- creation d'un nouvel utilisateur
-- creation d'une ferme
-- affichage des fermes
-- recherche d'une ferme par id
-- modification d'une ferme
-- suppression d'une ferme
-- ajout d'un poulet dans une ferme existante
-- ajout d'une vache dans une ferme existante
-
-Le projet est organise avec une architecture en couches afin de separer les responsabilites.
+Le backend est structure pour etre utilise par une interface console aujourd'hui, puis par JavaFX ensuite.
 
 ## Architecture
 
 ```text
-src/
-  controller/   Couche controleur, encore en preparation
-  dao/          Acces aux donnees SQL Server
-  database/     Configuration de la connexion JDBC
-  dto/          Objets de transfert de donnees
-  model/        Modeles metier
-  service/      Logique metier
-  util/         Classes utilitaires
-  Main.java     Menu console principal
-  Main2.java    Point d'entree secondaire pour tests ponctuels
+src/main/java/
+  controller/   Facade appelee par l'UI console ou JavaFX
+  services/     Validation et logique metier
+  dao/          Requetes SQL Server
+  database/     Configuration JDBC
+  dto/          Objets de transfert
+  exceptions/   Exceptions metier exploitables par l'UI
+  model/        Entites metier
+  util/         Session, validation, hash password
+  Main.java     Menu console
 ```
 
-## Packages principaux
-
-### model
-
-Contient les classes metier :
-
-- `User`
-- `Farm`
-- `Animal`
-- `Vache`
-- `Poulet`
-- `Admin`
-- `Ouvrier`
-- `Stock`
-- `Task`
-- `Cultiver`
-
-### dao
-
-Contient les classes responsables des requetes SQL :
-
-- `UserDAO`
-- `FarmDAO`
-- `AnimalDAO`
-- `StockDAO`
-- `TaskDAO`
-
-### service
-
-Contient la logique applicative :
-
-- `AuthService`
-- `UserService`
-- `FarmService`
-- `AnimalService`
-- `ProductionService`
-- `TaskAssignmentService`
-
-### dto
-
-Contient les objets utilises pour transporter des donnees sans exposer directement les modeles :
-
-- `LoginRequestDTO`
-- `UserResponseDTO`
-
-## Base de donnees
-
-Le projet utilise SQL Server avec le driver JDBC Microsoft :
+Flux principal :
 
 ```text
-libs/mssql-jdbc-13.4.0.jre11.jar
+UI -> Controller -> Service -> DAO -> SQL Server
 ```
 
-La connexion est centralisee dans :
+## Dependances
+
+Le projet utilise Maven.
+
+- `mssql-jdbc` pour SQL Server
+- `jbcrypt` pour le hash des mots de passe
+- `javafx-controls` et `javafx-fxml` pour l'integration JavaFX
+- `maven-compiler-plugin` avec `release 11`
+
+## Configuration base de donnees
+
+La connexion JDBC est centralisee dans :
 
 ```text
-src/database/ConnectionDb.java
+src/main/java/database/ConnectionDb.java
 ```
 
-Par defaut, la configuration locale est :
+Valeurs par defaut :
 
 ```text
-URL: jdbc:sqlserver://localhost:1433;databaseName=java_project;Encrypt=True;TrustServerCertificate=True;
+URL: jdbc:sqlserver://localhost:1433;databaseName=FermeAgricole;Encrypt=True;TrustServerCertificate=True;
 User: sa
 Password: sa
 ```
 
-Il est possible de remplacer ces valeurs avec des variables d'environnement :
+Variables d'environnement supportees :
 
 ```text
 JAVA_PROJECT_DB_URL
@@ -109,60 +58,129 @@ JAVA_PROJECT_DB_USER
 JAVA_PROJECT_DB_PASSWORD
 ```
 
-## Menu console
+## Build
 
-Le fichier `Main.java` lance un menu interactif :
+Depuis un terminal ou Maven est disponible :
 
-```text
-1. Login
-2. Add user
-3. Add farm
-4. Show farms
-5. Add poulet
-6. Add vache
-7. Find farm by id
-8. Update farm
-9. Delete farm
-0. Exit
+```bash
+mvn clean compile
+mvn clean package
 ```
 
-Le menu valide les entrees principales :
+Si Maven est lance depuis IntelliJ, verifier que `JAVA_HOME` pointe vers un JDK installe.
 
-- champs texte obligatoires
-- nombres valides
-- valeurs non negatives pour l'age et la production
-- verification que la ferme existe avant d'ajouter un animal
+Exemple Windows :
 
-## Etat actuel
+```powershell
+$env:JAVA_HOME='C:\Users\Microsoft\.jdks\openjdk-25.0.2'
+$env:PATH="$env:JAVA_HOME\bin;$env:PATH"
+mvn clean package
+```
 
-Le projet compile avec OpenJDK 25.
+## Modules backend
 
-Les fonctionnalites principales deja implementees sont :
+### Authentification et session
 
-- connexion SQL Server
-- login utilisateur
-- ajout utilisateur
-- ajout ferme
-- affichage des fermes
-- recherche d'une ferme par id
-- modification d'une ferme
-- suppression d'une ferme
-- ajout vache
-- ajout poulet
+- `AuthController.login(email, password)`
+- `AuthController.logout()`
+- `AuthController.getCurrentUser()`
+- `AuthController.isAuthenticated()`
+- `SessionManager.login(user)`
+- `SessionManager.logout()`
+- `SessionManager.getCurrentUser()`
+- `SessionManager.isAuthenticated()`
 
-## Points a ameliorer
+Les mots de passe sont hashes avec BCrypt via `PasswordHasher`.
 
-Les prochaines ameliorations recommandees sont :
+### Users
 
-- hasher les mots de passe au lieu de les stocker en clair
-- remplacer les `printStackTrace()` par une gestion d'erreurs plus propre
-- completer les classes `controller`
-- ajouter des methodes de recherche, modification et suppression pour les animaux
-- ajouter des tests
-- migrer vers Maven ou Gradle pour gerer les dependances plus proprement
+- create
+- read
+- update
+- delete
+- search exact par email : `searchUserByEmail`
+- recherche dynamique par email : `searchUsersByEmail`
+- gestion workers via role `OUVRIER`
 
-## Execution
+### Farms
 
-Le projet peut etre lance depuis IntelliJ IDEA avec le JDK configure.
+- create
+- read
+- update
+- delete
+- `searchFarmByName(String name)`
+- `countAnimals(int farmId)`
+- `countWorkers(int farmId)`
+- `countTasks(int farmId)`
+- `countStocks(int farmId)`
+- `getFarmSummary(int farmId)`
 
-Depuis un terminal, il faut compiler avec le driver SQL Server dans le classpath, puis lancer `Main`.
+### Animals
+
+- add vache
+- add poulet
+- read all/by id/by farm
+- update
+- delete
+- `updateHealthStatus`
+- `searchAnimalByType(String type)`
+- `getAnimalsByFarmId(int farmId)`
+
+### Stocks
+
+- create
+- read all/by id/by farm
+- update
+- delete
+- add quantity
+- remove quantity
+- check availability
+- low stock check
+- `searchStockByType(String type)`
+- `getStocksByFarm(int farmId)`
+
+### Tasks
+
+- create
+- read all/by id/by farm/by worker
+- update
+- delete
+- assign to worker
+- update status
+- `searchTaskByStatus(TaskStatus status)`
+- `getTasksByWorker(int workerId)`
+- `getTasksByFarm(int farmId)`
+
+### Cultiver
+
+- create
+- read all/by id/by farm
+- update
+- delete
+- update status
+- calculate harvest dates
+- `getCultiversByFarm(int farmId)`
+
+Les statuts Java sont convertis vers les valeurs acceptees par SQL Server.
+
+## Exceptions
+
+Les services lancent des exceptions metier heritant de `BusinessException` :
+
+- `ValidationException`
+- `AuthenticationException`
+- `NotFoundException`
+
+Une UI JavaFX peut intercepter `BusinessException` pour afficher un message utilisateur propre.
+
+## Notes JavaFX
+
+Les controllers exposent les methodes necessaires pour les ecrans JavaFX :
+
+- recherche dynamique
+- listes filtrees par ferme
+- dashboard counters
+- session utilisateur
+- CRUD principaux
+
+Le backend compile et package avec Maven avant integration JavaFX.

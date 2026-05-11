@@ -9,9 +9,18 @@ public class PasswordHasher {
     }
 
     public static boolean verifyPassword(String rawPassword, String hashedPassword) {
-        if (hashedPassword == null || !hashedPassword.startsWith("$2a$")) {
+        if (!isHashedPassword(hashedPassword)) {
             return false;
         }
-        return BCrypt.checkpw(rawPassword, hashedPassword);
+        try {
+            return BCrypt.checkpw(rawPassword, hashedPassword);
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    public static boolean isHashedPassword(String password) {
+        return password != null &&
+                (password.startsWith("$2a$") || password.startsWith("$2b$") || password.startsWith("$2y$"));
     }
 }

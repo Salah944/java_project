@@ -11,6 +11,7 @@ public interface UserDAO {
     Optional<User> getById(int id);
     Optional<User> getWorkerById(int id);
     Optional<User> findByEmail(String email);
+    List<User> searchByEmail(String email);
     User update(User user, int id);
     boolean delete(int id);
 }

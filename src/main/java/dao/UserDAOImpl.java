@@ -31,12 +31,12 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public List<User> getAll() {
-        return fetchUsers("SELECT * FROM Users", null);
+        return fetchUsers("SELECT * FROM Users", (Integer) null);
     }
 
     @Override
     public List<User> getAllWorkers() {
-        return fetchUsers("SELECT * FROM Users WHERE role = 'OUVRIER'", null);
+        return fetchUsers("SELECT * FROM Users WHERE role = 'OUVRIER'", (Integer) null);
     }
 
     @Override
@@ -64,6 +64,11 @@ public class UserDAOImpl implements UserDAO {
             throw new RuntimeException("Error finding user by email: " + e.getMessage(), e);
         }
         return Optional.empty();
+    }
+
+    @Override
+    public List<User> searchByEmail(String email) {
+        return fetchUsers("SELECT * FROM Users WHERE LOWER(email) LIKE LOWER(?)", "%" + email + "%");
     }
 
     @Override
@@ -101,6 +106,20 @@ public class UserDAOImpl implements UserDAO {
         try (Connection cnx = ConnectionDb.getConnection();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
             if (param != null) stmt.setInt(1, param);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) users.add(mapResultSetToUser(rs));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error fetching users: " + e.getMessage(), e);
+        }
+        return users;
+    }
+
+    private List<User> fetchUsers(String sql, String param) {
+        List<User> users = new ArrayList<>();
+        try (Connection cnx = ConnectionDb.getConnection();
+             PreparedStatement stmt = cnx.prepareStatement(sql)) {
+            stmt.setString(1, param);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) users.add(mapResultSetToUser(rs));
             }

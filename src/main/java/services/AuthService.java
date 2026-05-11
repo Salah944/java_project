@@ -9,6 +9,7 @@ import model.User;
 import util.PasswordHasher;
 import util.SessionManager;
 import util.ValidationUtils;
+import java.util.Optional;
 
 public class AuthService {
 
@@ -33,5 +34,17 @@ public class AuthService {
                 user.getEmail(),
                 user.getRole().name()
         );
+    }
+
+    public void logout() {
+        SessionManager.logout();
+    }
+
+    public Optional<User> getCurrentUser() {
+        return SessionManager.getCurrentUser();
+    }
+
+    public boolean isAuthenticated() {
+        return SessionManager.isAuthenticated();
     }
 }
