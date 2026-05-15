@@ -83,4 +83,13 @@ public class LoginController {
     private void showError(String message) {
         errorLabel.setText(message == null || message.isBlank() ? "Une erreur est survenue." : message);
     }
+
+    @FXML
+    private void goToSignup() {
+        try {
+            App.showSignup();
+        } catch (IOException e) {
+            showError("Impossible d'ouvrir la page d'inscription.");
+        }
+    }
 }

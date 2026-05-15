@@ -1,96 +1,120 @@
 .root {
-    -fx-font-family: "Segoe UI", Arial, sans-serif;
-    -fx-background-color: #f4f7f6;
+    -fx-font-family: "Segoe UI", "Inter", Roboto, Helvetica, Arial, sans-serif;
+    -fx-background-color: #f3f4f6;
 }
 
 .brand-panel {
-    -fx-background-color: #143d33;
+    -fx-background-color: linear-gradient(to bottom right, #064e3b, #10b981);
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 15, 0, 0, 0);
 }
 
 .brand-kicker {
-    -fx-text-fill: #9dd8bd;
-    -fx-font-size: 13px;
+    -fx-text-fill: #a7f3d0;
+    -fx-font-size: 14px;
     -fx-font-weight: 700;
+    -fx-letter-spacing: 1px;
 }
 
 .brand-title {
     -fx-text-fill: #ffffff;
-    -fx-font-size: 42px;
-    -fx-font-weight: 800;
+    -fx-font-size: 46px;
+    -fx-font-weight: 900;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 5, 0, 0, 2);
 }
 
 .brand-copy {
-    -fx-text-fill: #d8eee5;
-    -fx-font-size: 15px;
-    -fx-line-spacing: 4px;
+    -fx-text-fill: #ecfdf5;
+    -fx-font-size: 16px;
+    -fx-line-spacing: 6px;
 }
 
 .brand-metrics Label {
     -fx-text-fill: #ffffff;
-    -fx-background-color: rgba(255, 255, 255, 0.14);
-    -fx-background-radius: 6px;
-    -fx-padding: 8px 10px;
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+    -fx-background-radius: 20px;
+    -fx-padding: 8px 14px;
     -fx-font-size: 12px;
+    -fx-font-weight: bold;
 }
 
 .login-surface {
-    -fx-background-color: #f4f7f6;
+    -fx-background-color: #f3f4f6;
 }
 
 .login-form {
     -fx-background-color: #ffffff;
-    -fx-background-radius: 8px;
-    -fx-border-color: #dfe8e4;
-    -fx-border-radius: 8px;
-    -fx-padding: 34px;
+    -fx-background-radius: 12px;
+    -fx-padding: 40px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 20, 0, 0, 8);
 }
 
 .form-title {
-    -fx-text-fill: #1c2b27;
-    -fx-font-size: 28px;
-    -fx-font-weight: 800;
+    -fx-text-fill: #111827;
+    -fx-font-size: 32px;
+    -fx-font-weight: 900;
 }
 
 .form-subtitle {
-    -fx-text-fill: #687872;
-    -fx-font-size: 14px;
+    -fx-text-fill: #6b7280;
+    -fx-font-size: 15px;
 }
 
 .field-label {
-    -fx-text-fill: #334640;
-    -fx-font-size: 13px;
+    -fx-text-fill: #374151;
+    -fx-font-size: 14px;
     -fx-font-weight: 700;
 }
 
 .text-input {
-    -fx-background-color: #f8faf9;
-    -fx-border-color: #ccd9d4;
-    -fx-border-radius: 6px;
-    -fx-background-radius: 6px;
-    -fx-padding: 11px 12px;
-    -fx-font-size: 14px;
+    -fx-background-color: #f9fafb;
+    -fx-border-color: #e5e7eb;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 12px 14px;
+    -fx-font-size: 15px;
+    -fx-text-fill: #1f2937;
 }
 
 .text-input:focused {
-    -fx-border-color: #23765a;
+    -fx-border-color: #10b981;
     -fx-background-color: #ffffff;
+    -fx-effect: dropshadow(three-pass-box, rgba(16, 185, 129, 0.2), 5, 0, 0, 0);
 }
 
 .primary-button {
-    -fx-background-color: #23765a;
+    -fx-background-color: linear-gradient(to right, #10b981, #059669);
     -fx-text-fill: white;
-    -fx-background-radius: 6px;
-    -fx-padding: 12px 16px;
-    -fx-font-size: 14px;
+    -fx-background-radius: 8px;
+    -fx-padding: 14px 20px;
+    -fx-font-size: 16px;
     -fx-font-weight: 800;
     -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(16, 185, 129, 0.3), 10, 0, 0, 4);
 }
 
 .primary-button:hover {
-    -fx-background-color: #1b6049;
+    -fx-background-color: linear-gradient(to right, #059669, #047857);
+}
+
+.primary-button:pressed {
+    -fx-background-color: #047857;
+    -fx-effect: none;
 }
 
 .error-label {
-    -fx-text-fill: #b42318;
-    -fx-font-size: 13px;
+    -fx-text-fill: #ef4444;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.link-label {
+    -fx-text-fill: #10b981;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-underline: true;
+}
+
+.link-label:hover {
+    -fx-text-fill: #059669;
 }
