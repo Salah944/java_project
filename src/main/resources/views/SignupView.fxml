@@ -2,18 +2,30 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<<<<<<< Updated upstream
+=======
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+>>>>>>> Stashed changes
 
 <BorderPane prefHeight="600.0" prefWidth="900.0" stylesheets="@../css/login.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.SignupController">
     <left>
         <VBox alignment="CENTER_LEFT" prefWidth="430.0" spacing="18.0" styleClass="brand-panel">
             <padding><Insets bottom="48.0" left="48.0" right="48.0" top="48.0" /></padding>
+<<<<<<< Updated upstream
             <Label styleClass="brand-kicker" text="Rejoignez-nous" />
             <Label styleClass="brand-title" text="Cr\u00e9er un compte" wrapText="true" />
             <Label styleClass="brand-copy" text="Inscrivez-vous pour g\u00e9rer votre propre ferme." wrapText="true" />
+=======
+            <Label styleClass="brand-kicker" text="REJOIGNEZ LA COMMUNAUT\u00C9" />
+            <Label styleClass="brand-title" text="Cr\u00e9ez votre compte Agricole" wrapText="true" />
+            <Label styleClass="brand-copy" text="G\u00e9rez vos fermes, vos animaux et vos stocks avec une solution moderne et intuitive." wrapText="true" />
+>>>>>>> Stashed changes
         </VBox>
     </left>
     <center>
         <StackPane styleClass="login-surface">
+<<<<<<< Updated upstream
             <VBox alignment="CENTER_LEFT" maxWidth="360.0" spacing="16.0" styleClass="login-form">
                 <Label styleClass="form-title" text="Inscription" />
                 <VBox spacing="7.0">
@@ -24,10 +36,26 @@
                     <Label styleClass="field-label" text="Email" />
                     <TextField fx:id="emailField" promptText="admin@example.com" />
                 </VBox>
+=======
+            <VBox alignment="CENTER_LEFT" maxWidth="380.0" spacing="16.0" styleClass="login-form">
+                <Label styleClass="form-title" text="Inscription" />
+                
+                <VBox spacing="7.0">
+                    <Label styleClass="field-label" text="Nom complet" />
+                    <TextField fx:id="nameField" promptText="Ex: Ahmed Ben" />
+                </VBox>
+                
+                <VBox spacing="7.0">
+                    <Label styleClass="field-label" text="Email" />
+                    <TextField fx:id="emailField" promptText="email@exemple.com" />
+                </VBox>
+                
+>>>>>>> Stashed changes
                 <VBox spacing="7.0">
                     <Label styleClass="field-label" text="Mot de passe" />
                     <PasswordField fx:id="passwordField" promptText="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022" />
                 </VBox>
+<<<<<<< Updated upstream
                 <VBox spacing="7.0">
                     <Label styleClass="field-label" text="ID de la Ferme \u00e0 g\u00e9rer" />
                     <TextField fx:id="farmIdField" promptText="Ex: 1" />
@@ -36,6 +64,28 @@
                 <Button fx:id="signupButton" defaultButton="true" maxWidth="Infinity" onAction="#handleSignup" styleClass="primary-button" text="S'inscrire" />
                 <HBox alignment="CENTER" spacing="5.0">
                     <Label text="D\u00e9j\u00e0 un compte ?" />
+=======
+                
+                <VBox spacing="7.0">
+                    <Label styleClass="field-label" text="Votre r\u00f4le" />
+                    <ComboBox fx:id="roleComboBox" maxWidth="Infinity" promptText="Choisir un r\u00f4le">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="ADMIN" />
+                                <String fx:value="OUVRIER" />
+                            </FXCollections>
+                        </items>
+                    </ComboBox>
+                </VBox>
+                
+                <Label fx:id="errorLabel" minHeight="22.0" styleClass="error-label" wrapText="true" />
+                
+                <Button fx:id="signupButton" defaultButton="true" maxWidth="Infinity" onAction="#handleSignup" styleClass="primary-button" text="S'inscrire maintenant" />
+                
+                <HBox alignment="CENTER" spacing="5.0">
+                    <padding><Insets top="10.0" /></padding>
+                    <Label text="D\u00e9j\u00e0 membre ?" />
+>>>>>>> Stashed changes
                     <Label onMouseClicked="#goToLogin" styleClass="link-label" text="Se connecter" />
                 </HBox>
             </VBox>
