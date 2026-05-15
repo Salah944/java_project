@@ -70,13 +70,13 @@ public class SignupController {
             newUser.setName(name);
             newUser.setEmail(email);
             newUser.setPassword(password);
-            newUser.setRole(Role.MANAGER); // Default role for self-signup
+            newUser.setRole(Role.ADMIN); // Default role for self-signup
 
             userService.createUser(newUser);
 
             // Navigate back to login with a success message (or just navigate)
             goToLogin();
-        } catch (ValidationException | BusinessException e) {
+        } catch (BusinessException e) {
             showError(e.getMessage());
         } catch (Exception e) {
             showError("Erreur lors de l'inscription. Verifiez la base de donnees.");

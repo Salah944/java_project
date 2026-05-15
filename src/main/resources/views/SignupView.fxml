@@ -31,7 +31,7 @@
         <StackPane styleClass="login-surface">
             <VBox alignment="CENTER_LEFT" maxWidth="360.0" spacing="16.0" styleClass="login-form">
                 <Label styleClass="form-title" text="Inscription" />
-                <Label styleClass="form-subtitle" text="Nouveau compte MANAGER" />
+                <Label styleClass="form-subtitle" text="Nouveau compte Administrateur" />
                 
                 <VBox spacing="7.0">
                     <Label styleClass="field-label" text="Nom complet" />
