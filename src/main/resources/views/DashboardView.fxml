@@ -2,18 +2,20 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
 
 <BorderPane prefHeight="760.0" prefWidth="1180.0" stylesheets="@../css/dashboard.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.DashboardController">
     <left>
         <VBox prefWidth="260.0" spacing="18.0" styleClass="sidebar">
             <padding><Insets bottom="24.0" left="22.0" right="22.0" top="28.0" /></padding>
             <VBox spacing="4.0">
-                <Label styleClass="app-title" text="Farm Management" />
-                <Label styleClass="app-subtitle" text="Agriculture Pro" />
+                <Label styleClass="app-title" text="?? FarmPro" />
+                <Label styleClass="app-subtitle" text="Gestion Agricole Intelligente" />
             </VBox>
+            <Separator opacity="0.2" />
             <ListView fx:id="navigationList" VBox.vgrow="ALWAYS" />
-            <Button maxWidth="Infinity" onAction="#openSelectedModule" styleClass="secondary-button" text="Ouvrir module" />
-            <Button maxWidth="Infinity" onAction="#logout" styleClass="ghost-button" text="Deconnexion" />
+            <Button maxWidth="Infinity" onAction="#openSelectedModule" styleClass="secondary-button" text="?? Ouvrir le Module" />
+            <Button maxWidth="Infinity" onAction="#logout" styleClass="ghost-button" text="?? Déconnexion" />
         </VBox>
     </left>
     <center>
@@ -22,13 +24,14 @@
             <HBox alignment="CENTER_LEFT" spacing="16.0">
                 <VBox spacing="5.0">
                     <Label styleClass="page-title" text="Tableau de Bord" />
-                    <Label styleClass="page-subtitle" text="Gestion et statistiques agricoles" />
+                    <Label styleClass="page-subtitle" text="Suivi en temps réel de votre exploitation" />
                 </VBox>
                 <Region HBox.hgrow="ALWAYS" />
-                <Label fx:id="userLabel" styleClass="user-label" text="Utilisateur" />
-                <Button onAction="#refreshDashboard" styleClass="primary-button" text="Actualiser" />
+                <Label fx:id="userLabel" styleClass="user-label" text="?? Utilisateur" />
+                <Button onAction="#refreshDashboard" styleClass="primary-button" text="?? Actualiser" />
             </HBox>
-            <GridPane hgap="16.0" vgap="16.0">
+            
+            <GridPane hgap="20.0" vgap="20.0">
                 <columnConstraints>
                     <ColumnConstraints hgrow="ALWAYS" percentWidth="20.0" />
                     <ColumnConstraints hgrow="ALWAYS" percentWidth="20.0" />
@@ -36,32 +39,53 @@
                     <ColumnConstraints hgrow="ALWAYS" percentWidth="20.0" />
                     <ColumnConstraints hgrow="ALWAYS" percentWidth="20.0" />
                 </columnConstraints>
-                <rowConstraints><RowConstraints minHeight="132.0" vgrow="ALWAYS" /></rowConstraints>
-                <VBox spacing="9.0" styleClass="metric-card" GridPane.columnIndex="0">
+                <rowConstraints><RowConstraints minHeight="140.0" vgrow="ALWAYS" /></rowConstraints>
+                
+                <VBox spacing="10.0" styleClass="metric-card" GridPane.columnIndex="0">
+                    <Label styleClass="metric-icon" text="??" />
                     <Label styleClass="metric-label" text="Fermes" />
                     <Label fx:id="farmsCountLabel" styleClass="metric-value" text="0" />
                 </VBox>
-                <VBox spacing="9.0" styleClass="metric-card" GridPane.columnIndex="1">
+                <VBox spacing="10.0" styleClass="metric-card" GridPane.columnIndex="1">
+                    <Label styleClass="metric-icon" text="??" />
                     <Label styleClass="metric-label" text="Animaux" />
                     <Label fx:id="animalsCountLabel" styleClass="metric-value" text="0" />
                 </VBox>
-                <VBox spacing="9.0" styleClass="metric-card" GridPane.columnIndex="2">
+                <VBox spacing="10.0" styleClass="metric-card" GridPane.columnIndex="2">
+                    <Label styleClass="metric-icon" text="?????" />
                     <Label styleClass="metric-label" text="Ouvriers" />
                     <Label fx:id="workersCountLabel" styleClass="metric-value" text="0" />
                 </VBox>
-                <VBox spacing="9.0" styleClass="metric-card" GridPane.columnIndex="3">
-                    <Label styleClass="metric-label" text="Taches" />
+                <VBox spacing="10.0" styleClass="metric-card" GridPane.columnIndex="3">
+                    <Label styleClass="metric-icon" text="??" />
+                    <Label styleClass="metric-label" text="Tâches" />
                     <Label fx:id="tasksCountLabel" styleClass="metric-value" text="0" />
                 </VBox>
-                <VBox spacing="9.0" styleClass="metric-card" GridPane.columnIndex="4">
-                    <Label styleClass="metric-label" text="Stock" />
+                <VBox spacing="10.0" styleClass="metric-card" GridPane.columnIndex="4">
+                    <Label styleClass="metric-icon" text="??" />
+                    <Label styleClass="metric-label" text="Stocks" />
                     <Label fx:id="stocksCountLabel" styleClass="metric-value" text="0" />
                 </VBox>
             </GridPane>
-            <VBox spacing="12.0" styleClass="work-area" VBox.vgrow="ALWAYS">
-                <Label styleClass="section-title" text="Vue d'ensemble" />
-                <Label fx:id="statusLabel" styleClass="status-label" text="" />
-            </VBox>
+            
+            <HBox spacing="20.0" VBox.vgrow="ALWAYS">
+                <VBox spacing="15.0" styleClass="work-area" HBox.hgrow="ALWAYS">
+                    <Label styleClass="section-title" text="?? État de l'exploitation" />
+                    <Separator />
+                    <Label fx:id="statusLabel" styleClass="status-label" text="Prêt" />
+                    <Region VBox.vgrow="ALWAYS" />
+                    <HBox alignment="CENTER" spacing="20.0">
+                        <VBox alignment="CENTER" styleClass="info-badge">
+                            <Label text="Climat" styleClass="badge-title" />
+                            <Label text="Ensoleillé ??" />
+                        </VBox>
+                        <VBox alignment="CENTER" styleClass="info-badge">
+                            <Label text="Saison" styleClass="badge-title" />
+                            <Label text="Printemps ??" />
+                        </VBox>
+                    </HBox>
+                </VBox>
+            </HBox>
         </VBox>
     </center>
 </BorderPane>

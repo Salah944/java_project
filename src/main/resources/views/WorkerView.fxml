@@ -5,49 +5,47 @@
 
 <BorderPane prefHeight="760.0" prefWidth="1180.0" stylesheets="@../css/crud.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.WorkerViewController">
     <top>
-        <HBox alignment="CENTER_LEFT" spacing="15.0" styleClass="header-bar">
-            <padding><Insets bottom="15.0" left="25.0" right="25.0" top="15.0" /></padding>
-            <Button onAction="#goBack" styleClass="back-button" text="Retour Dashboard" />
-            <Label styleClass="header-title" text="Gestion des Ouvriers" />
+        <HBox alignment="CENTER_LEFT" spacing="15.0" styleClass="header-bar" style="-fx-background-color: #064e3b; -fx-padding: 15;">
+            <Button onAction="#goBack" styleClass="secondary-button" text="?? Retour" />
+            <Label style="-fx-text-fill: white; -fx-font-size: 24; -fx-font-weight: bold;" text="????? Gestion des Ouvriers" />
         </HBox>
     </top>
     <left>
-        <VBox prefWidth="320.0" spacing="15.0" styleClass="form-panel">
-            <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
-            <Label styleClass="section-title" text="Formulaire Ouvrier" />
+        <VBox prefWidth="350.0" spacing="15.0" styleClass="form-panel" style="-fx-background-color: #f0fdf4; -fx-padding: 20;">
+            <Label style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #166534;" text="?? Fiche Ouvrier" />
+            <Separator />
             <VBox spacing="5.0">
-                <Label text="Nom complet" />
-                <TextField fx:id="nameField" promptText="Nom" />
+                <Label text="Nom complet" style="-fx-font-weight: bold;" />
+                <TextField fx:id="nameField" promptText="Jean Dupont" />
             </VBox>
             <VBox spacing="5.0">
-                <Label text="Email" />
-                <TextField fx:id="emailField" promptText="email@example.com" />
+                <Label text="Email" style="-fx-font-weight: bold;" />
+                <TextField fx:id="emailField" promptText="jean@ferme.com" />
             </VBox>
             <VBox spacing="5.0">
-                <Label text="Mot de passe (si nouveau)" />
-                <PasswordField fx:id="passwordField" promptText="Mot de passe" />
+                <Label text="Mot de passe" style="-fx-font-weight: bold;" />
+                <PasswordField fx:id="passwordField" promptText="••••••••" />
             </VBox>
             <VBox spacing="5.0">
-                <Label text="Salaire" />
-                <TextField fx:id="salaireField" promptText="0.00" />
+                <Label text="Salaire Mensuel (€)" style="-fx-font-weight: bold;" />
+                <TextField fx:id="salaireField" promptText="1500.00" />
             </VBox>
-            <HBox spacing="10.0">
-                <Button fx:id="saveButton" onAction="#handleSave" styleClass="primary-button" text="Enregistrer" />
-                <Button onAction="#clearForm" styleClass="secondary-button" text="Annuler" />
+            <HBox spacing="10.0" alignment="CENTER">
+                <Button fx:id="saveButton" onAction="#handleSave" prefWidth="120" style="-fx-background-color: #15803d; -fx-text-fill: white; -fx-font-weight: bold;" text="?? Enregistrer" />
+                <Button onAction="#clearForm" prefWidth="120" style="-fx-background-color: #9ca3af; -fx-text-fill: white;" text="?? Vider" />
             </HBox>
             <Separator />
-            <Button fx:id="deleteButton" onAction="#handleDelete" styleClass="danger-button" text="Supprimer" visible="false" />
+            <Button fx:id="deleteButton" maxWidth="Infinity" onAction="#handleDelete" style="-fx-background-color: #ef4444; -fx-text-fill: white; -fx-font-weight: bold;" text="??? Supprimer l'Ouvrier" visible="false" />
         </VBox>
     </left>
     <center>
-        <VBox spacing="15.0" styleClass="table-container">
-            <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
+        <VBox spacing="15.0" style="-fx-padding: 20;">
             <TableView fx:id="workerTable" VBox.vgrow="ALWAYS">
                 <columns>
-                    <TableColumn fx:id="idCol" prefWidth="50.0" text="ID" />
-                    <TableColumn fx:id="nameCol" prefWidth="150.0" text="Nom" />
-                    <TableColumn fx:id="emailCol" prefWidth="200.0" text="Email" />
-                    <TableColumn fx:id="salaireCol" prefWidth="100.0" text="Salaire" />
+                    <TableColumn fx:id="idCol" prefWidth="60.0" text="ID" />
+                    <TableColumn fx:id="nameCol" prefWidth="200.0" text="Nom" />
+                    <TableColumn fx:id="emailCol" prefWidth="250.0" text="Email" />
+                    <TableColumn fx:id="salaireCol" prefWidth="150.0" text="Salaire" />
                 </columns>
             </TableView>
         </VBox>
