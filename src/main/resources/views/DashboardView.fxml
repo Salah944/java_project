@@ -53,24 +53,49 @@
                     <RowConstraints minHeight="132.0" vgrow="ALWAYS" />
                 </rowConstraints>
                 <VBox spacing="9.0" styleClass="metric-card" GridPane.columnIndex="0">
-                    <Label styleClass="metric-label" text="Farms" />
-                    <Label fx:id="farmsCountLabel" styleClass="metric-value" text="0" />
+                    <HBox alignment="CENTER_LEFT" spacing="10.0">
+                        <Label style="-fx-font-size: 24px;" text="🚜" />
+                        <VBox spacing="2.0">
+                            <Label styleClass="metric-label" text="Fermes" />
+                            <Label fx:id="farmsCountLabel" styleClass="metric-value" text="0" />
+                        </VBox>
+                    </HBox>
                 </VBox>
                 <VBox spacing="9.0" styleClass="metric-card" GridPane.columnIndex="1">
-                    <Label styleClass="metric-label" text="Animals" />
-                    <Label fx:id="animalsCountLabel" styleClass="metric-value" text="0" />
+                    <HBox alignment="CENTER_LEFT" spacing="10.0">
+                        <Label style="-fx-font-size: 24px;" text="🐄" />
+                        <VBox spacing="2.0">
+                            <Label styleClass="metric-label" text="Animaux" />
+                            <Label fx:id="animalsCountLabel" styleClass="metric-value" text="0" />
+                        </VBox>
+                    </HBox>
                 </VBox>
                 <VBox spacing="9.0" styleClass="metric-card" GridPane.columnIndex="2">
-                    <Label styleClass="metric-label" text="Workers" />
-                    <Label fx:id="workersCountLabel" styleClass="metric-value" text="0" />
+                    <HBox alignment="CENTER_LEFT" spacing="10.0">
+                        <Label style="-fx-font-size: 24px;" text="👨‍🌾" />
+                        <VBox spacing="2.0">
+                            <Label styleClass="metric-label" text="Ouvriers" />
+                            <Label fx:id="workersCountLabel" styleClass="metric-value" text="0" />
+                        </VBox>
+                    </HBox>
                 </VBox>
                 <VBox spacing="9.0" styleClass="metric-card" GridPane.columnIndex="3">
-                    <Label styleClass="metric-label" text="Tasks" />
-                    <Label fx:id="tasksCountLabel" styleClass="metric-value" text="0" />
+                    <HBox alignment="CENTER_LEFT" spacing="10.0">
+                        <Label style="-fx-font-size: 24px;" text="📋" />
+                        <VBox spacing="2.0">
+                            <Label styleClass="metric-label" text="Tâches" />
+                            <Label fx:id="tasksCountLabel" styleClass="metric-value" text="0" />
+                        </VBox>
+                    </HBox>
                 </VBox>
                 <VBox spacing="9.0" styleClass="metric-card" GridPane.columnIndex="4">
-                    <Label styleClass="metric-label" text="Stock" />
-                    <Label fx:id="stocksCountLabel" styleClass="metric-value" text="0" />
+                    <HBox alignment="CENTER_LEFT" spacing="10.0">
+                        <Label style="-fx-font-size: 24px;" text="📦" />
+                        <VBox spacing="2.0">
+                            <Label styleClass="metric-label" text="Stock" />
+                            <Label fx:id="stocksCountLabel" styleClass="metric-value" text="0" />
+                        </VBox>
+                    </HBox>
                 </VBox>
             </GridPane>
             <VBox spacing="12.0" styleClass="work-area">

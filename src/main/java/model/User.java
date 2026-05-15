@@ -1,16 +1,13 @@
 package model;
-
 import model.enums.Role;
-
 public class User {
     private int id;
     private String name;
     private String email;
     private String password;
     private Role role;
-
+    private Integer farmId;
     public User() {}
-
     public User(int id, String name, String email, String password, Role role) {
         this.id = id;
         this.name = name;
@@ -18,11 +15,13 @@ public class User {
         this.password = password;
         this.role = role;
     }
-
+    public User(int id, String name, String email, String password, Role role, Integer farmId) {
+        this(id, name, email, password, role);
+        this.farmId = farmId;
+    }
     public User(int id, String name, String email, String password, String role) {
         this(id, name, email, password, Role.valueOf(role.trim().toUpperCase()));
     }
-
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
     public String getName() { return name; }
@@ -33,9 +32,10 @@ public class User {
     public void setPassword(String password) { this.password = password; }
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }
-
+    public Integer getFarmId() { return farmId; }
+    public void setFarmId(Integer farmId) { this.farmId = farmId; }
     @Override
     public String toString() {
-        return "User{" + "id=" + id + ", name='" + name + "', email='" + email + "', role=" + role + '}';
+        return "User{id=" + id + ", name=" + name + ", email=" + email + ", role=" + role + ", farmId=" + farmId + "}";
     }
 }

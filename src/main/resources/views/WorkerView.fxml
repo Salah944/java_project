@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane prefHeight="760.0" prefWidth="1180.0" stylesheets="@../css/crud.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.WorkerViewController">
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="15.0" styleClass="header-bar">
+            <padding><Insets bottom="15.0" left="25.0" right="25.0" top="15.0" /></padding>
+            <Button onAction="#goBack" styleClass="back-button" text="? Retour Dashboard" />
+            <Label styleClass="header-title" text="Gestion des Ouvriers" />
+        </HBox>
+    </top>
+    <left>
+        <VBox prefWidth="320.0" spacing="15.0" styleClass="form-panel">
+            <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
+            <Label styleClass="section-title" text="Formulaire Ouvrier" />
+            <VBox spacing="5.0">
+                <Label text="Nom complet" />
+                <TextField fx:id="nameField" promptText="Nom" />
+            </VBox>
+            <VBox spacing="5.0">
+                <Label text="Email" />
+                <TextField fx:id="emailField" promptText="email@example.com" />
+            </VBox>
+            <VBox spacing="5.0">
+                <Label text="Mot de passe (si nouveau)" />
+                <PasswordField fx:id="passwordField" promptText="••••••••" />
+            </VBox>
+            <VBox spacing="5.0">
+                <Label text="Salaire" />
+                <TextField fx:id="salaireField" promptText="0.00" />
+            </VBox>
+            <HBox spacing="10.0">
+                <Button fx:id="saveButton" onAction="#handleSave" styleClass="primary-button" text="Enregistrer" />
+                <Button onAction="#clearForm" styleClass="secondary-button" text="Annuler" />
+            </HBox>
+            <Separator />
+            <Button fx:id="deleteButton" onAction="#handleDelete" styleClass="danger-button" text="Supprimer" visible="false" />
+        </VBox>
+    </left>
+    <center>
+        <VBox spacing="15.0" styleClass="table-container">
+            <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
+            <TableView fx:id="workerTable" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="idCol" prefWidth="50.0" text="ID" />
+                    <TableColumn fx:id="nameCol" prefWidth="150.0" text="Nom" />
+                    <TableColumn fx:id="emailCol" prefWidth="200.0" text="Email" />
+                    <TableColumn fx:id="salaireCol" prefWidth="100.0" text="Salaire" />
+                </columns>
+            </TableView>
+        </VBox>
+    </center>
+</BorderPane>

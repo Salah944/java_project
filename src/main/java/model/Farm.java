@@ -5,14 +5,16 @@ public class Farm {
     private int id;
     private String name;
     private String location;
+    private int adminId;
 
     public Farm() {
     }
 
-    public Farm(int id, String name, String location) {
+    public Farm(int id, String name, String location, int adminId) {
         this.id = id;
         this.name = name;
         this.location = location;
+        this.adminId = adminId;
     }
 
     public int getId() {
@@ -39,12 +41,21 @@ public class Farm {
         this.location = location;
     }
 
+    public int getAdminId() {
+        return adminId;
+    }
+
+    public void setAdminId(int adminId) {
+        this.adminId = adminId;
+    }
+
     @Override
     public String toString() {
         return "Farm{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", location='" + location + '\'' +
+                ", adminId=" + adminId +
                 '}';
     }
 }

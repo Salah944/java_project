@@ -1,44 +1,26 @@
 package controller;
-
 import app.App;
 import exceptions.BusinessException;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import model.Farm;
-
+import model.User;
+import model.enums.Role;
 import java.io.IOException;
-import java.util.List;
 
 public class DashboardController {
-
     private final AuthController authController = new AuthController();
     private final FarmController farmController = new FarmController();
 
-    @FXML
-    private Label userLabel;
-
-    @FXML
-    private Label farmsCountLabel;
-
-    @FXML
-    private Label animalsCountLabel;
-
-    @FXML
-    private Label workersCountLabel;
-
-    @FXML
-    private Label tasksCountLabel;
-
-    @FXML
-    private Label stocksCountLabel;
-
-    @FXML
-    private Label statusLabel;
-
-    @FXML
-    private ListView<String> navigationList;
+    @FXML private Label userLabel;
+    @FXML private Label farmsCountLabel;
+    @FXML private Label animalsCountLabel;
+    @FXML private Label workersCountLabel;
+    @FXML private Label tasksCountLabel;
+    @FXML private Label stocksCountLabel;
+    @FXML private Label statusLabel;
+    @FXML private ListView<String> navigationList;
 
     @FXML
     private void initialize() {
@@ -49,8 +31,17 @@ public class DashboardController {
                 "Task Management",
                 "Cultiver Management"
         );
+        
+        authController.getCurrentUser().ifPresent(user -> {
+            userLabel.setText(user.getName() + " [" + user.getRole() + "]");
+            if (user.getRole() == Role.ADMIN || user.getRole() == Role.MANAGER) {
+                if (!navigationList.getItems().contains("Worker Management")) {
+                    navigationList.getItems().add("Worker Management");
+                }
+            }
+        });
+        
         navigationList.getSelectionModel().selectFirst();
-        authController.getCurrentUser().ifPresent(user -> userLabel.setText(user.getName() + " - " + user.getRole()));
         refreshDashboard();
     }
 
@@ -58,38 +49,35 @@ public class DashboardController {
     private void refreshDashboard() {
         statusLabel.setText("");
         try {
-            List<Farm> farms = farmController.getAllFarms();
-            long totalAnimals = 0;
-            long totalWorkers = 0;
-            long totalTasks = 0;
-            long totalStocks = 0;
-
-            for (Farm farm : farms) {
-                totalAnimals += farmController.countAnimals(farm.getId());
-                totalWorkers += farmController.countWorkers(farm.getId());
-                totalTasks += farmController.countTasks(farm.getId());
-                totalStocks += farmController.countStocks(farm.getId());
+            User currentUser = authController.getCurrentUser().orElse(null);
+            if (currentUser == null || currentUser.getFarmId() == null) {
+                farmsCountLabel.setText("0");
+                animalsCountLabel.setText("0");
+                workersCountLabel.setText("0");
+                tasksCountLabel.setText("0");
+                stocksCountLabel.setText("0");
+                statusLabel.setText("Aucune ferme associee.");
+                return;
             }
 
-            farmsCountLabel.setText(String.valueOf(farms.size()));
-            animalsCountLabel.setText(String.valueOf(totalAnimals));
-            workersCountLabel.setText(String.valueOf(totalWorkers));
-            tasksCountLabel.setText(String.valueOf(totalTasks));
-            stocksCountLabel.setText(String.valueOf(totalStocks));
-            statusLabel.setText("Dashboard actualise.");
+            int farmId = currentUser.getFarmId();
+            farmsCountLabel.setText("1"); // Linked to 1 farm
+            animalsCountLabel.setText(String.valueOf(farmController.countAnimals(farmId)));
+            workersCountLabel.setText(String.valueOf(farmController.countWorkers(farmId)));
+            tasksCountLabel.setText(String.valueOf(farmController.countTasks(farmId)));
+            stocksCountLabel.setText(String.valueOf(farmController.countStocks(farmId)));
+            statusLabel.setText("Donnees de votre ferme actualisees.");
         } catch (BusinessException e) {
             showError("Erreur metier", e.getMessage());
         } catch (RuntimeException e) {
-            showError("Erreur de chargement", "Impossible de charger les statistiques. Verifiez la base de donnees.");
+            showError("Erreur de chargement", "Impossible de charger les statistiques.");
         }
     }
 
     @FXML
     private void openSelectedModule() {
         String module = navigationList.getSelectionModel().getSelectedItem();
-        if (module == null) {
-            return;
-        }
+        if (module == null) return;
         try {
             switch (module) {
                 case "Farm Management": App.showFarmManagement(); break;
@@ -97,6 +85,7 @@ public class DashboardController {
                 case "Stock Management": App.showStockManagement(); break;
                 case "Task Management": App.showTaskManagement(); break;
                 case "Cultiver Management": App.showCultiverManagement(); break;
+                case "Worker Management": App.showWorkerManagement(); break;
                 default: showInfo("Module inconnu", module);
             }
         } catch (IOException e) {
@@ -107,11 +96,7 @@ public class DashboardController {
     @FXML
     private void logout() {
         authController.logout();
-        try {
-            App.showLogin();
-        } catch (IOException e) {
-            showError("Navigation impossible", "Impossible de revenir a l'ecran de login.");
-        }
+        try { App.showLogin(); } catch (IOException e) { showError("Erreur", "Retour login impossible."); }
     }
 
     private void showError(String title, String message) {

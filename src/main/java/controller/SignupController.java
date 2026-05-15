@@ -1,104 +1,62 @@
 package controller;
-
 import app.App;
 import exceptions.BusinessException;
-import exceptions.ValidationException;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import model.User;
 import model.enums.Role;
 import services.UserService;
-
 import java.io.IOException;
 
 public class SignupController {
-
     private final UserService userService = new UserService();
-
-    @FXML
-    private TextField nameField;
-
-    @FXML
-    private TextField emailField;
-
-    @FXML
-    private PasswordField passwordField;
-
-    @FXML
-    private Label errorLabel;
-
-    @FXML
-    private Button signupButton;
+    @FXML private TextField nameField;
+    @FXML private TextField emailField;
+    @FXML private PasswordField passwordField;
+    @FXML private TextField farmIdField;
+    @FXML private Label errorLabel;
+    @FXML private Button signupButton;
 
     @FXML
     private void initialize() {
         errorLabel.setText("");
-        passwordField.setOnAction(event -> handleSignup());
-        nameField.textProperty().addListener((observable, oldValue, newValue) -> clearError());
-        emailField.textProperty().addListener((observable, oldValue, newValue) -> clearError());
-        passwordField.textProperty().addListener((observable, oldValue, newValue) -> clearError());
     }
 
     @FXML
-    private void handleSignup() {
-        String name = nameField.getText() == null ? "" : nameField.getText().trim();
-        String email = emailField.getText() == null ? "" : emailField.getText().trim();
-        String password = passwordField.getText() == null ? "" : passwordField.getText();
-
-        if (name.isBlank()) {
-            showError("Veuillez saisir votre nom.");
-            nameField.requestFocus();
-            return;
-        }
-        if (email.isBlank()) {
-            showError("Veuillez saisir votre email.");
-            emailField.requestFocus();
-            return;
-        }
-        if (password.isBlank()) {
-            showError("Veuillez saisir un mot de passe.");
-            passwordField.requestFocus();
-            return;
-        }
-
-        signupButton.setDisable(true);
+    public void handleSignup() {
         try {
+            String name = nameField.getText().trim();
+            String email = emailField.getText().trim();
+            String password = passwordField.getText();
+            String farmIdStr = farmIdField.getText().trim();
+
+            if (name.isEmpty() || email.isEmpty() || password.isEmpty() || farmIdStr.isEmpty()) {
+                showError("Tous les champs sont obligatoires.");
+                return;
+            }
+
             User newUser = new User();
             newUser.setName(name);
             newUser.setEmail(email);
             newUser.setPassword(password);
-            newUser.setRole(Role.ADMIN); // Default role for self-signup
+            newUser.setRole(Role.ADMIN);
+            newUser.setFarmId(Integer.parseInt(farmIdStr));
 
             userService.createUser(newUser);
-
-            // Navigate back to login with a success message (or just navigate)
-            goToLogin();
-        } catch (BusinessException e) {
-            showError(e.getMessage());
+            App.showLogin();
+        } catch (NumberFormatException e) {
+            showError("L'ID de la ferme doit \u00eatre un nombre.");
         } catch (Exception e) {
-            showError("Erreur lors de l'inscription. Verifiez la base de donnees.");
-        } finally {
-            signupButton.setDisable(false);
+            showError(e.getMessage());
         }
     }
 
     @FXML
-    private void goToLogin() {
-        try {
-            App.showLogin();
-        } catch (IOException e) {
-            showError("Impossible d'ouvrir la page de connexion.");
-        }
-    }
-
-    private void clearError() {
-        errorLabel.setText("");
+    public void goToLogin() {
+        try { App.showLogin(); } catch (IOException e) { showError("Retour impossible."); }
     }
 
     private void showError(String message) {
-        errorLabel.setText(message == null || message.isBlank() ? "Une erreur est survenue." : message);
+        errorLabel.setText(message);
     }
 }

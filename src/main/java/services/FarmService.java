@@ -6,6 +6,8 @@ import dto.FarmSummaryDTO;
 import exceptions.NotFoundException;
 import exceptions.ValidationException;
 import model.Farm;
+import model.User;
+import util.SessionManager;
 import java.util.List;
 
 public class FarmService {
@@ -14,37 +16,49 @@ public class FarmService {
 
     public Farm createFarm(Farm farm) {
         validateFarm(farm);
+        User currentUser = SessionManager.getCurrentUser().orElseThrow(() -> new ValidationException("Non authentifie"));
+        farm.setAdminId(currentUser.getId());
         return farmDAO.create(farm);
     }
 
     public List<Farm> getAllFarms() {
-        return farmDAO.getAll();
+        User currentUser = SessionManager.getCurrentUser().orElseThrow(() -> new ValidationException("Non authentifie"));
+        if (currentUser.getRole() == model.enums.Role.ADMIN) {
+            return farmDAO.getByAdminId(currentUser.getId());
+        }
+        return farmDAO.getAll(); // Or handle other roles appropriately
     }
 
     public Farm getFarmById(int id) {
-        return farmDAO.getById(id)
+        Farm farm = farmDAO.getById(id)
                 .orElseThrow(() -> new NotFoundException("Ferme non trouvée avec l'id : " + id));
+        User currentUser = SessionManager.getCurrentUser().orElseThrow(() -> new ValidationException("Non authentifie"));
+        if (currentUser.getRole() == model.enums.Role.ADMIN && farm.getAdminId() != currentUser.getId()) {
+            throw new NotFoundException("Vous n'avez pas accès à cette ferme.");
+        }
+        return farm;
     }
 
     public List<Farm> searchFarmByName(String name) {
+        User currentUser = SessionManager.getCurrentUser().orElseThrow(() -> new ValidationException("Non authentifie"));
         if (name == null || name.isBlank()) {
-            return farmDAO.getAll();
+            return getAllFarms();
+        }
+        if (currentUser.getRole() == model.enums.Role.ADMIN) {
+            return farmDAO.searchByNameAndAdmin(name.trim(), currentUser.getId());
         }
         return farmDAO.searchByName(name.trim());
     }
 
     public Farm updateFarm(Farm farm, int id) {
-        if (!farmDAO.getById(id).isPresent()) {
-            throw new NotFoundException("Ferme non trouvée avec l'id : " + id);
-        }
+        Farm existing = getFarmById(id); // this will check adminId
         validateFarm(farm);
+        farm.setAdminId(existing.getAdminId());
         return farmDAO.update(farm, id);
     }
 
     public boolean deleteFarm(int id) {
-        if (!farmDAO.getById(id).isPresent()) {
-            throw new NotFoundException("Ferme non trouvée avec l'id : " + id);
-        }
+        getFarmById(id); // this checks adminId
         return farmDAO.delete(id);
     }
 

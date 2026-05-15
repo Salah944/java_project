@@ -11,11 +11,12 @@ public class FarmDAOImpl implements FarmDAO {
 
     @Override
     public Farm create(Farm farm) {
-        String sql = "INSERT INTO Farm (name, location) VALUES (?, ?)";
+        String sql = "INSERT INTO Farm (name, location, admin_id) VALUES (?, ?, ?)";
         try (Connection cnx = ConnectionDb.getConnection();
              PreparedStatement stmt = cnx.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, farm.getName());
             stmt.setString(2, farm.getLocation());
+            stmt.setInt(3, farm.getAdminId());
             stmt.executeUpdate();
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
@@ -39,11 +40,35 @@ public class FarmDAOImpl implements FarmDAO {
                 farms.add(new Farm(
                         rs.getInt("id"),
                         rs.getString("name"),
-                        rs.getString("location")
+                        rs.getString("location"),
+                        rs.getInt("admin_id")
                 ));
             }
         } catch (SQLException e) {
             throw new RuntimeException("Error fetching farms: " + e.getMessage(), e);
+        }
+        return farms;
+    }
+
+    @Override
+    public List<Farm> getByAdminId(int adminId) {
+        List<Farm> farms = new ArrayList<>();
+        String sql = "SELECT * FROM Farm WHERE admin_id = ?";
+        try (Connection cnx = ConnectionDb.getConnection();
+             PreparedStatement stmt = cnx.prepareStatement(sql)) {
+            stmt.setInt(1, adminId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    farms.add(new Farm(
+                            rs.getInt("id"),
+                            rs.getString("name"),
+                            rs.getString("location"),
+                            rs.getInt("admin_id")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error fetching farms by admin: " + e.getMessage(), e);
         }
         return farms;
     }
@@ -59,7 +84,8 @@ public class FarmDAOImpl implements FarmDAO {
                     return Optional.of(new Farm(
                             rs.getInt("id"),
                             rs.getString("name"),
-                            rs.getString("location")
+                            rs.getString("location"),
+                            rs.getInt("admin_id")
                     ));
                 }
             }
@@ -81,7 +107,8 @@ public class FarmDAOImpl implements FarmDAO {
                     farms.add(new Farm(
                             rs.getInt("id"),
                             rs.getString("name"),
-                            rs.getString("location")
+                            rs.getString("location"),
+                            rs.getInt("admin_id")
                     ));
                 }
             }
@@ -92,13 +119,38 @@ public class FarmDAOImpl implements FarmDAO {
     }
 
     @Override
+    public List<Farm> searchByNameAndAdmin(String name, int adminId) {
+        List<Farm> farms = new ArrayList<>();
+        String sql = "SELECT * FROM Farm WHERE LOWER(name) LIKE LOWER(?) AND admin_id = ?";
+        try (Connection cnx = ConnectionDb.getConnection();
+             PreparedStatement stmt = cnx.prepareStatement(sql)) {
+            stmt.setString(1, "%" + name + "%");
+            stmt.setInt(2, adminId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    farms.add(new Farm(
+                            rs.getInt("id"),
+                            rs.getString("name"),
+                            rs.getString("location"),
+                            rs.getInt("admin_id")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error searching farms by name and admin: " + e.getMessage(), e);
+        }
+        return farms;
+    }
+
+    @Override
     public Farm update(Farm farm, int id) {
-        String sql = "UPDATE Farm SET name = ?, location = ? WHERE id = ?";
+        String sql = "UPDATE Farm SET name = ?, location = ?, admin_id = ? WHERE id = ?";
         try (Connection cnx = ConnectionDb.getConnection();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
             stmt.setString(1, farm.getName());
             stmt.setString(2, farm.getLocation());
-            stmt.setInt(3, id);
+            stmt.setInt(3, farm.getAdminId());
+            stmt.setInt(4, id);
             stmt.executeUpdate();
             farm.setId(id);
             return farm;
