@@ -8,4 +8,6 @@ public interface OuvrierDAO {
     Ouvrier create(Ouvrier ouvrier);
     List<Ouvrier> getAll();
     Optional<Ouvrier> getById(int id);
+    Ouvrier update(Ouvrier ouvrier, int id);
+    boolean delete(int id);
 }

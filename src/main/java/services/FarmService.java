@@ -8,17 +8,28 @@ import exceptions.ValidationException;
 import model.Farm;
 import model.User;
 import util.SessionManager;
+import dao.UserDAO;
+import dao.UserDAOImpl;
 import java.util.List;
 
 public class FarmService {
 
     private final FarmDAO farmDAO = new FarmDAOImpl();
+    private final UserDAO userDAO = new UserDAOImpl();
 
     public Farm createFarm(Farm farm) {
         validateFarm(farm);
         User currentUser = SessionManager.getCurrentUser().orElseThrow(() -> new ValidationException("Non authentifie"));
         farm.setAdminId(currentUser.getId());
-        return farmDAO.create(farm);
+        Farm createdFarm = farmDAO.create(farm);
+        
+        // If the admin doesn't have a farmId set, set it to the newly created farm
+        if (currentUser.getFarmId() == null || currentUser.getFarmId() == 0) {
+            currentUser.setFarmId(createdFarm.getId());
+            userDAO.update(currentUser, currentUser.getId());
+        }
+        
+        return createdFarm;
     }
 
     public List<Farm> getAllFarms() {

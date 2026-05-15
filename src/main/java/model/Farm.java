@@ -17,7 +17,10 @@ public class Farm {
         this.adminId = adminId;
     }
 
-    public Farm(int i, String name, String location) {
+    public Farm(int id, String name, String location) {
+        this.id = id;
+        this.name = name;
+        this.location = location;
     }
 
     public int getId() {

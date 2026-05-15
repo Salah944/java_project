@@ -73,4 +73,31 @@ public class OuvrierDAOImpl implements OuvrierDAO {
         }
         return ouvriers;
     }
+
+    @Override
+    public Ouvrier update(Ouvrier ouvrier, int id) {
+        String sql = "UPDATE Ouvrier SET salaire = ?, farm_id = ? WHERE id = ?";
+        try (Connection cnx = ConnectionDb.getConnection();
+             PreparedStatement stmt = cnx.prepareStatement(sql)) {
+            stmt.setDouble(1, ouvrier.getSalaire());
+            stmt.setInt(2, ouvrier.getFarmId());
+            stmt.setInt(3, id);
+            stmt.executeUpdate();
+            return ouvrier;
+        } catch (SQLException e) {
+            throw new RuntimeException("Error updating worker: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public boolean delete(int id) {
+        String sql = "DELETE FROM Ouvrier WHERE id = ?";
+        try (Connection cnx = ConnectionDb.getConnection();
+             PreparedStatement stmt = cnx.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Error deleting worker: " + e.getMessage(), e);
+        }
+    }
 }

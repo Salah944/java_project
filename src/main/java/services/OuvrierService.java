@@ -57,8 +57,19 @@ public class OuvrierService {
     }
 
     public void updateOuvrier(Ouvrier selectedWorker, int id) {
+        if (!ouvrierDAO.getById(id).isPresent()) {
+            throw new NotFoundException("Ouvrier non trouvé avec l'id : " + id);
+        }
+        if (selectedWorker.getSalaire() < 0) {
+            throw new ValidationException("Le salaire doit etre positif ou nul.");
+        }
+        ouvrierDAO.update(selectedWorker, id);
     }
 
     public void deleteOuvrier(int id) {
+        if (!ouvrierDAO.getById(id).isPresent()) {
+            throw new NotFoundException("Ouvrier non trouvé avec l'id : " + id);
+        }
+        ouvrierDAO.delete(id);
     }
 }
