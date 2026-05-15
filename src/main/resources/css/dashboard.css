@@ -1,0 +1,121 @@
+.root {
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+    -fx-background-color: #f3f6f5;
+}
+
+.sidebar {
+    -fx-background-color: #173a33;
+}
+
+.app-title {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 20px;
+    -fx-font-weight: 800;
+}
+
+.app-subtitle {
+    -fx-text-fill: #a7cbbb;
+    -fx-font-size: 12px;
+}
+
+.list-view {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #dcebe5;
+    -fx-padding: 12px 10px;
+    -fx-background-radius: 6px;
+}
+
+.list-cell:selected {
+    -fx-background-color: #2a765d;
+    -fx-text-fill: #ffffff;
+}
+
+.content {
+    -fx-background-color: #f3f6f5;
+}
+
+.page-title {
+    -fx-text-fill: #17231f;
+    -fx-font-size: 30px;
+    -fx-font-weight: 800;
+}
+
+.page-subtitle,
+.section-copy {
+    -fx-text-fill: #62746e;
+    -fx-font-size: 14px;
+}
+
+.user-label {
+    -fx-text-fill: #334640;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #dbe6e2;
+    -fx-background-radius: 6px;
+    -fx-border-radius: 6px;
+    -fx-padding: 9px 12px;
+}
+
+.metric-card,
+.work-area {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 8px;
+    -fx-border-color: #dfe8e4;
+    -fx-border-radius: 8px;
+    -fx-padding: 18px;
+}
+
+.metric-label {
+    -fx-text-fill: #66766f;
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+}
+
+.metric-value {
+    -fx-text-fill: #173a33;
+    -fx-font-size: 34px;
+    -fx-font-weight: 800;
+}
+
+.section-title {
+    -fx-text-fill: #1c2b27;
+    -fx-font-size: 18px;
+    -fx-font-weight: 800;
+}
+
+.status-label {
+    -fx-text-fill: #23765a;
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+}
+
+.primary-button,
+.secondary-button,
+.ghost-button {
+    -fx-background-radius: 6px;
+    -fx-padding: 10px 14px;
+    -fx-font-size: 13px;
+    -fx-font-weight: 800;
+    -fx-cursor: hand;
+}
+
+.primary-button {
+    -fx-background-color: #23765a;
+    -fx-text-fill: white;
+}
+
+.secondary-button {
+    -fx-background-color: #d9efe6;
+    -fx-text-fill: #173a33;
+}
+
+.ghost-button {
+    -fx-background-color: transparent;
+    -fx-border-color: #6e9385;
+    -fx-border-radius: 6px;
+    -fx-text-fill: #ffffff;
+}

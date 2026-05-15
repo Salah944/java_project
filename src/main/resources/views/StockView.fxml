@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane prefHeight="760.0" prefWidth="1180.0" stylesheets="@../css/crud.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.StockViewController">
+    <top>
+        <HBox spacing="20" styleClass="header">
+            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+            <Button text="Retour Dashboard" onAction="#handleBack" styleClass="back-button" />
+            <Label text="Stock Management" styleClass="title-label" />
+        </HBox>
+    </top>
+    <center>
+        <TableView fx:id="stockTable" prefWidth="800">
+            <columns>
+                <TableColumn fx:id="colId" text="ID" prefWidth="50" />
+                <TableColumn fx:id="colFarmId" text="Farm ID" prefWidth="100" />
+                <TableColumn fx:id="colType" text="Type" prefWidth="200" />
+                <TableColumn fx:id="colQuantity" text="Quantite" prefWidth="150" />
+            </columns>
+        </TableView>
+    </center>
+    <right>
+        <VBox spacing="15" prefWidth="300" styleClass="form-pane">
+            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+            <Label text="Formulaire Stock" styleClass="form-title" />
+            <TextField fx:id="farmIdField" promptText="Farm ID" />
+            <TextField fx:id="typeField" promptText="Type" />
+            <TextField fx:id="quantityField" promptText="Quantite" />
+            <Button text="Ajouter" onAction="#handleAdd" styleClass="action-button, add-button" maxWidth="Infinity" />
+            <Button text="Supprimer" onAction="#handleDelete" styleClass="action-button, delete-button" maxWidth="Infinity" />
+        </VBox>
+    </right>
+</BorderPane>

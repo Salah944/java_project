@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane prefHeight="760.0" prefWidth="1180.0" stylesheets="@../css/crud.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.FarmViewController">
+    <top>
+        <HBox spacing="20" styleClass="header">
+            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+            <Button text="Retour Dashboard" onAction="#handleBack" styleClass="back-button" />
+            <Label text="Farm Management" styleClass="title-label" />
+        </HBox>
+    </top>
+    <center>
+        <TableView fx:id="farmTable" prefWidth="800">
+            <columns>
+                <TableColumn fx:id="colId" text="ID" prefWidth="50" />
+                <TableColumn fx:id="colName" text="Nom" prefWidth="250" />
+                <TableColumn fx:id="colLocation" text="Localisation" prefWidth="300" />
+            </columns>
+        </TableView>
+    </center>
+    <right>
+        <VBox spacing="15" prefWidth="300" styleClass="form-pane">
+            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+            <Label text="Formulaire Ferme" styleClass="form-title" />
+            <TextField fx:id="nameField" promptText="Nom de la ferme" />
+            <TextField fx:id="locationField" promptText="Localisation" />
+            <HBox spacing="10">
+                <Button fx:id="btnAdd" text="Ajouter" onAction="#handleAdd" styleClass="action-button, add-button" />
+                <Button fx:id="btnUpdate" text="Modifier" onAction="#handleUpdate" styleClass="action-button, update-button" />
+            </HBox>
+            <Button fx:id="btnDelete" text="Supprimer" onAction="#handleDelete" styleClass="action-button, delete-button" maxWidth="Infinity" />
+        </VBox>
+    </right>
+</BorderPane>

@@ -1,0 +1,96 @@
+.root {
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+    -fx-background-color: #f4f7f6;
+}
+
+.brand-panel {
+    -fx-background-color: #143d33;
+}
+
+.brand-kicker {
+    -fx-text-fill: #9dd8bd;
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+}
+
+.brand-title {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 42px;
+    -fx-font-weight: 800;
+}
+
+.brand-copy {
+    -fx-text-fill: #d8eee5;
+    -fx-font-size: 15px;
+    -fx-line-spacing: 4px;
+}
+
+.brand-metrics Label {
+    -fx-text-fill: #ffffff;
+    -fx-background-color: rgba(255, 255, 255, 0.14);
+    -fx-background-radius: 6px;
+    -fx-padding: 8px 10px;
+    -fx-font-size: 12px;
+}
+
+.login-surface {
+    -fx-background-color: #f4f7f6;
+}
+
+.login-form {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 8px;
+    -fx-border-color: #dfe8e4;
+    -fx-border-radius: 8px;
+    -fx-padding: 34px;
+}
+
+.form-title {
+    -fx-text-fill: #1c2b27;
+    -fx-font-size: 28px;
+    -fx-font-weight: 800;
+}
+
+.form-subtitle {
+    -fx-text-fill: #687872;
+    -fx-font-size: 14px;
+}
+
+.field-label {
+    -fx-text-fill: #334640;
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+}
+
+.text-input {
+    -fx-background-color: #f8faf9;
+    -fx-border-color: #ccd9d4;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 11px 12px;
+    -fx-font-size: 14px;
+}
+
+.text-input:focused {
+    -fx-border-color: #23765a;
+    -fx-background-color: #ffffff;
+}
+
+.primary-button {
+    -fx-background-color: #23765a;
+    -fx-text-fill: white;
+    -fx-background-radius: 6px;
+    -fx-padding: 12px 16px;
+    -fx-font-size: 14px;
+    -fx-font-weight: 800;
+    -fx-cursor: hand;
+}
+
+.primary-button:hover {
+    -fx-background-color: #1b6049;
+}
+
+.error-label {
+    -fx-text-fill: #b42318;
+    -fx-font-size: 13px;
+}

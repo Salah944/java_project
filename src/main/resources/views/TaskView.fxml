@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane prefHeight="760.0" prefWidth="1180.0" stylesheets="@../css/crud.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.TaskViewController">
+    <top>
+        <HBox spacing="20" styleClass="header">
+            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+            <Button text="Retour Dashboard" onAction="#handleBack" styleClass="back-button" />
+            <Label text="Task Management" styleClass="title-label" />
+        </HBox>
+    </top>
+    <center>
+        <TableView fx:id="taskTable" prefWidth="800">
+            <columns>
+                <TableColumn fx:id="colId" text="ID" prefWidth="50" />
+                <TableColumn fx:id="colFarmId" text="Farm ID" prefWidth="100" />
+                <TableColumn fx:id="colDesc" text="Description" prefWidth="300" />
+                <TableColumn fx:id="colStatus" text="Statut" prefWidth="150" />
+            </columns>
+        </TableView>
+    </center>
+    <right>
+        <VBox spacing="15" prefWidth="300" styleClass="form-pane">
+            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+            <Label text="Formulaire Tache" styleClass="form-title" />
+            <TextField fx:id="farmIdField" promptText="Farm ID" />
+            <TextField fx:id="descField" promptText="Description" />
+            <ComboBox fx:id="statusComboBox" promptText="Statut" maxWidth="Infinity" />
+            <Button text="Ajouter" onAction="#handleAdd" styleClass="action-button, add-button" maxWidth="Infinity" />
+            <Button text="Supprimer" onAction="#handleDelete" styleClass="action-button, delete-button" maxWidth="Infinity" />
+        </VBox>
+    </right>
+</BorderPane>
