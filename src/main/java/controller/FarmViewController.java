@@ -48,42 +48,69 @@ public class FarmViewController {
             farmList = FXCollections.observableArrayList(farmController.getAllFarms());
             farmTable.setItems(farmList);
         } catch (Exception e) {
-            showAlert("Erreur", "Impossible de charger les fermes : " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible de charger les fermes : " + e.getMessage());
         }
     }
 
     @FXML
     private void handleAdd() {
-        if (validateInput()) {
-            Farm farm = new Farm(0, nameField.getText(), locationField.getText());
+        String name = nameField.getText() == null ? "" : nameField.getText().trim();
+        String location = locationField.getText() == null ? "" : locationField.getText().trim();
+
+        if (name.isEmpty() || location.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Champs manquants", "Le nom et la localisation sont obligatoires.");
+            return;
+        }
+
+        try {
+            Farm farm = new Farm(0, name, location);
             farmController.createFarm(farm);
+            showAlert(Alert.AlertType.INFORMATION, "Succes", "Ferme creee avec succes.");
             clearFields();
             loadFarms();
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible de creer la ferme : " + e.getMessage());
         }
     }
 
     @FXML
     private void handleUpdate() {
         Farm selected = farmTable.getSelectionModel().getSelectedItem();
-        if (selected != null && validateInput()) {
-            Farm updated = new Farm(selected.getId(), nameField.getText(), locationField.getText());
+        if (selected == null) {
+            showAlert(Alert.AlertType.WARNING, "Selection", "Veuillez selectionner une ferme a modifier.");
+            return;
+        }
+        String name = nameField.getText() == null ? "" : nameField.getText().trim();
+        String location = locationField.getText() == null ? "" : locationField.getText().trim();
+        if (name.isEmpty() || location.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Champs manquants", "Le nom et la localisation sont obligatoires.");
+            return;
+        }
+        try {
+            Farm updated = new Farm(selected.getId(), name, location);
             farmController.updateFarm(updated, selected.getId());
+            showAlert(Alert.AlertType.INFORMATION, "Succes", "Ferme mise a jour avec succes.");
             clearFields();
             loadFarms();
-        } else {
-            showAlert("Selection", "Veuillez selectionner une ferme a modifier.");
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible de modifier la ferme : " + e.getMessage());
         }
     }
 
     @FXML
     private void handleDelete() {
         Farm selected = farmTable.getSelectionModel().getSelectedItem();
-        if (selected != null) {
+        if (selected == null) {
+            showAlert(Alert.AlertType.WARNING, "Selection", "Veuillez selectionner une ferme a supprimer.");
+            return;
+        }
+        try {
             farmController.deleteFarm(selected.getId());
+            showAlert(Alert.AlertType.INFORMATION, "Succes", "Ferme supprimee avec succes.");
             clearFields();
             loadFarms();
-        } else {
-            showAlert("Selection", "Veuillez selectionner une ferme a supprimer.");
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible de supprimer : " + e.getMessage());
         }
     }
 
@@ -92,23 +119,14 @@ public class FarmViewController {
         App.showDashboard();
     }
 
-    private boolean validateInput() {
-        if (nameField.getText() == null || nameField.getText().trim().isEmpty() || 
-            locationField.getText() == null || locationField.getText().trim().isEmpty()) {
-            showAlert("Erreur", "Tous les champs sont obligatoires.");
-            return false;
-        }
-        return true;
-    }
-
     private void clearFields() {
         nameField.clear();
         locationField.clear();
         farmTable.getSelectionModel().clearSelection();
     }
 
-    private void showAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+    private void showAlert(Alert.AlertType type, String title, String content) {
+        Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(content);

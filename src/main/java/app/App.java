@@ -31,6 +31,14 @@ public class App extends Application {
         loadView("/views/FarmView.fxml", "Farm Management", 1180, 760);
     }
 
+    public static void showWorkerManagement() throws IOException {
+        loadView("/views/WorkerView.fxml", "Worker Management", 1180, 760);
+    }
+
+    public static void showSignup() throws IOException {
+        loadView("/views/SignupView.fxml", "Farm Management - Inscription", 900, 600);
+    }
+
     public static void showAnimalManagement() throws IOException {
         loadView("/views/AnimalView.fxml", "Animal Management", 1180, 760);
     }
