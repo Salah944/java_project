@@ -3,14 +3,13 @@ package controller;
 import app.App;
 import exceptions.BusinessException;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import model.Farm;
+import javafx.scene.control.*;
+import model.User;
+import model.enums.Role;
 import java.io.IOException;
-import java.util.List;
 
 public class DashboardController {
+
     private final AuthController authController = new AuthController();
     private final FarmController farmController = new FarmController();
 
@@ -27,18 +26,22 @@ public class DashboardController {
     private void initialize() {
         navigationList.getItems().setAll(
                 "Farm Management",
-                "Worker Management",
                 "Animal Management",
                 "Stock Management",
                 "Task Management",
                 "Cultiver Management"
         );
+        
+        authController.getCurrentUser().ifPresent(user -> {
+            userLabel.setText(user.getName() + " [" + user.getRole() + "]");
+            if (user.getRole() == Role.ADMIN) {
+                if (!navigationList.getItems().contains("Worker Management")) {
+                    navigationList.getItems().add("Worker Management");
+                }
+            }
+        });
+        
         navigationList.getSelectionModel().selectFirst();
-
-        authController.getCurrentUser().ifPresent(user ->
-                userLabel.setText(user.getName() + "  [" + user.getRole() + "]")
-        );
-
         refreshDashboard();
     }
 
@@ -46,37 +49,34 @@ public class DashboardController {
     private void refreshDashboard() {
         statusLabel.setText("");
         try {
-            List<Farm> farms = farmController.getAllFarms();
-
-            long totalAnimals = 0;
-            long totalWorkers = 0;
-            long totalTasks   = 0;
-            long totalStocks  = 0;
-
-            for (Farm farm : farms) {
-                totalAnimals += farmController.countAnimals(farm.getId());
-                totalWorkers += farmController.countWorkers(farm.getId());
-                totalTasks   += farmController.countTasks(farm.getId());
-                totalStocks  += farmController.countStocks(farm.getId());
+            User currentUser = authController.getCurrentUser().orElse(null);
+            if (currentUser == null || currentUser.getFarmId() == null) {
+                resetStats();
+                statusLabel.setText("Aucune ferme associ\u00e9e.");
+                return;
             }
 
-            farmsCountLabel.setText(String.valueOf(farms.size()));
-            animalsCountLabel.setText(String.valueOf(totalAnimals));
-            workersCountLabel.setText(String.valueOf(totalWorkers));
-            tasksCountLabel.setText(String.valueOf(totalTasks));
-            stocksCountLabel.setText(String.valueOf(totalStocks));
-
-            if (farms.isEmpty()) {
-                statusLabel.setText("Aucune ferme. Commencez par creer une ferme dans 'Farm Management'.");
-            } else {
-                statusLabel.setText("Donnees actualisees. " + farms.size() + " ferme(s) trouvee(s).");
-            }
-
+            int farmId = currentUser.getFarmId();
+            farmsCountLabel.setText("1");
+            animalsCountLabel.setText(String.valueOf(farmController.countAnimals(farmId)));
+            workersCountLabel.setText(String.valueOf(farmController.countWorkers(farmId)));
+            tasksCountLabel.setText(String.valueOf(farmController.countTasks(farmId)));
+            stocksCountLabel.setText(String.valueOf(farmController.countStocks(farmId)));
+            statusLabel.setText("Donn\u00e9es de votre ferme actualis\u00e9es.");
         } catch (BusinessException e) {
-            showError("Erreur metier", e.getMessage());
+            showError("Erreur m\u00e9tier", e.getMessage());
         } catch (RuntimeException e) {
-            showError("Erreur de chargement", "Impossible de charger les statistiques. Verifiez la base de donnees.");
+            showError("Erreur de chargement", "Impossible de charger les statistiques.");
+            e.printStackTrace();
         }
+    }
+
+    private void resetStats() {
+        farmsCountLabel.setText("0");
+        animalsCountLabel.setText("0");
+        workersCountLabel.setText("0");
+        tasksCountLabel.setText("0");
+        stocksCountLabel.setText("0");
     }
 
     @FXML
@@ -85,27 +85,23 @@ public class DashboardController {
         if (module == null) return;
         try {
             switch (module) {
-                case "Farm Management":    App.showFarmManagement();    break;
-                case "Worker Management":  App.showWorkerManagement();  break;
-                case "Animal Management":  App.showAnimalManagement();  break;
-                case "Stock Management":   App.showStockManagement();   break;
-                case "Task Management":    App.showTaskManagement();    break;
-                case "Cultiver Management":App.showCultiverManagement();break;
+                case "Farm Management": App.showFarmManagement(); break;
+                case "Animal Management": App.showAnimalManagement(); break;
+                case "Stock Management": App.showStockManagement(); break;
+                case "Task Management": App.showTaskManagement(); break;
+                case "Cultiver Management": App.showCultiverManagement(); break;
+                case "Worker Management": App.showWorkerManagement(); break;
                 default: showInfo("Module inconnu", module);
             }
         } catch (IOException e) {
-            showError("Erreur de navigation", "Impossible d'ouvrir le module : " + module);
+            showError("Erreur de navigation", "Impossible d'ouvrir le module " + module);
         }
     }
 
     @FXML
     private void logout() {
         authController.logout();
-        try {
-            App.showLogin();
-        } catch (IOException e) {
-            showError("Erreur", "Retour login impossible.");
-        }
+        try { App.showLogin(); } catch (IOException e) { showError("Erreur", "Retour login impossible."); }
     }
 
     private void showError(String title, String message) {
