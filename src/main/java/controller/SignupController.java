@@ -4,6 +4,7 @@ import app.App;
 import exceptions.BusinessException;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import model.User;
 import model.enums.Role;
 import services.UserService;
@@ -22,7 +23,7 @@ public class SignupController {
     @FXML private Button signupButton;
 
     @FXML
-    private void initialize() {
+    public void initialize() {
         errorLabel.setText("");
     }
 
@@ -64,7 +65,7 @@ public class SignupController {
     }
 
     @FXML
-    public void goToLogin() {
+    public void goToLogin(MouseEvent event) {
         try {
             App.showLogin();
         } catch (IOException e) {

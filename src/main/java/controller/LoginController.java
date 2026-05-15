@@ -10,27 +10,20 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-
+import javafx.scene.input.MouseEvent;
 import java.io.IOException;
 
 public class LoginController {
 
     private final AuthController authController = new AuthController();
 
-    @FXML
-    private TextField emailField;
+    @FXML private TextField emailField;
+    @FXML private PasswordField passwordField;
+    @FXML private Label errorLabel;
+    @FXML private Button loginButton;
 
     @FXML
-    private PasswordField passwordField;
-
-    @FXML
-    private Label errorLabel;
-
-    @FXML
-    private Button loginButton;
-
-    @FXML
-    private void initialize() {
+    public void initialize() {
         errorLabel.setText("");
         passwordField.setOnAction(event -> handleLogin());
         emailField.textProperty().addListener((observable, oldValue, newValue) -> clearError());
@@ -38,7 +31,7 @@ public class LoginController {
     }
 
     @FXML
-    private void handleLogin() {
+    public void handleLogin() {
         String email = emailField.getText() == null ? "" : emailField.getText().trim();
         String password = passwordField.getText() == null ? "" : passwordField.getText();
 
@@ -70,7 +63,8 @@ public class LoginController {
         } catch (IOException e) {
             showError("Impossible d'ouvrir le dashboard.");
         } catch (RuntimeException e) {
-            showError("Connexion impossible. Verifiez la base de donnees.");
+            showError("Connexion impossible. Verifiez la base de donn\u00e9es.");
+            e.printStackTrace();
         } finally {
             loginButton.setDisable(false);
         }
@@ -82,5 +76,14 @@ public class LoginController {
 
     private void showError(String message) {
         errorLabel.setText(message == null || message.isBlank() ? "Une erreur est survenue." : message);
+    }
+
+    @FXML
+    public void goToSignup(MouseEvent event) {
+        try {
+            App.showSignup();
+        } catch (IOException e) {
+            showError("Impossible d'ouvrir la page d'inscription.");
+        }
     }
 }
