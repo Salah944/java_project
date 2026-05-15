@@ -1,4 +1,5 @@
 package app;
+import database.ConnectionDb;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -8,6 +9,13 @@ import java.io.IOException;
 
 public class App extends Application {
     private static Stage primaryStage;
+
+    @Override
+    public void init() {
+        // Exécuter la migration de la base de données avant le démarrage de l'UI
+        ConnectionDb.initializeDatabase();
+    }
+
     @Override
     public void start(Stage stage) throws IOException {
         primaryStage = stage;
