@@ -1,26 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<BorderPane prefHeight="760.0" prefWidth="1180.0" stylesheets="@../css/dashboard.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.DashboardController">
+<BorderPane prefHeight="760.0" prefWidth="1180.0" stylesheets="@../css/dashboard.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.DashboardController">
     <left>
         <VBox prefWidth="260.0" spacing="18.0" styleClass="sidebar">
-            <padding>
-                <Insets bottom="24.0" left="22.0" right="22.0" top="28.0" />
-            </padding>
+            <padding><Insets bottom="24.0" left="22.0" right="22.0" top="28.0" /></padding>
             <VBox spacing="4.0">
                 <Label styleClass="app-title" text="Farm Management" />
-                <Label styleClass="app-subtitle" text="Desktop Console" />
+                <Label styleClass="app-subtitle" text="Agriculture Pro" />
             </VBox>
             <ListView fx:id="navigationList" VBox.vgrow="ALWAYS" />
             <Button maxWidth="Infinity" onAction="#openSelectedModule" styleClass="secondary-button" text="Ouvrir module" />
@@ -29,13 +18,11 @@
     </left>
     <center>
         <VBox spacing="24.0" styleClass="content">
-            <padding>
-                <Insets bottom="28.0" left="32.0" right="32.0" top="28.0" />
-            </padding>
+            <padding><Insets bottom="28.0" left="32.0" right="32.0" top="28.0" /></padding>
             <HBox alignment="CENTER_LEFT" spacing="16.0">
                 <VBox spacing="5.0">
-                    <Label styleClass="page-title" text="Dashboard" />
-                    <Label styleClass="page-subtitle" text="Vue globale des donnees agricoles" />
+                    <Label styleClass="page-title" text="Tableau de Bord" />
+                    <Label styleClass="page-subtitle" text="Gestion et statistiques agricoles" />
                 </VBox>
                 <Region HBox.hgrow="ALWAYS" />
                 <Label fx:id="userLabel" styleClass="user-label" text="Utilisateur" />
@@ -49,58 +36,30 @@
                     <ColumnConstraints hgrow="ALWAYS" percentWidth="20.0" />
                     <ColumnConstraints hgrow="ALWAYS" percentWidth="20.0" />
                 </columnConstraints>
-                <rowConstraints>
-                    <RowConstraints minHeight="132.0" vgrow="ALWAYS" />
-                </rowConstraints>
+                <rowConstraints><RowConstraints minHeight="132.0" vgrow="ALWAYS" /></rowConstraints>
                 <VBox spacing="9.0" styleClass="metric-card" GridPane.columnIndex="0">
-                    <HBox alignment="CENTER_LEFT" spacing="10.0">
-                        <Label style="-fx-font-size: 24px;" text="🚜" />
-                        <VBox spacing="2.0">
-                            <Label styleClass="metric-label" text="Fermes" />
-                            <Label fx:id="farmsCountLabel" styleClass="metric-value" text="0" />
-                        </VBox>
-                    </HBox>
+                    <Label styleClass="metric-label" text="Fermes" />
+                    <Label fx:id="farmsCountLabel" styleClass="metric-value" text="0" />
                 </VBox>
                 <VBox spacing="9.0" styleClass="metric-card" GridPane.columnIndex="1">
-                    <HBox alignment="CENTER_LEFT" spacing="10.0">
-                        <Label style="-fx-font-size: 24px;" text="🐄" />
-                        <VBox spacing="2.0">
-                            <Label styleClass="metric-label" text="Animaux" />
-                            <Label fx:id="animalsCountLabel" styleClass="metric-value" text="0" />
-                        </VBox>
-                    </HBox>
+                    <Label styleClass="metric-label" text="Animaux" />
+                    <Label fx:id="animalsCountLabel" styleClass="metric-value" text="0" />
                 </VBox>
                 <VBox spacing="9.0" styleClass="metric-card" GridPane.columnIndex="2">
-                    <HBox alignment="CENTER_LEFT" spacing="10.0">
-                        <Label style="-fx-font-size: 24px;" text="👨‍🌾" />
-                        <VBox spacing="2.0">
-                            <Label styleClass="metric-label" text="Ouvriers" />
-                            <Label fx:id="workersCountLabel" styleClass="metric-value" text="0" />
-                        </VBox>
-                    </HBox>
+                    <Label styleClass="metric-label" text="Ouvriers" />
+                    <Label fx:id="workersCountLabel" styleClass="metric-value" text="0" />
                 </VBox>
                 <VBox spacing="9.0" styleClass="metric-card" GridPane.columnIndex="3">
-                    <HBox alignment="CENTER_LEFT" spacing="10.0">
-                        <Label style="-fx-font-size: 24px;" text="📋" />
-                        <VBox spacing="2.0">
-                            <Label styleClass="metric-label" text="Tâches" />
-                            <Label fx:id="tasksCountLabel" styleClass="metric-value" text="0" />
-                        </VBox>
-                    </HBox>
+                    <Label styleClass="metric-label" text="Taches" />
+                    <Label fx:id="tasksCountLabel" styleClass="metric-value" text="0" />
                 </VBox>
                 <VBox spacing="9.0" styleClass="metric-card" GridPane.columnIndex="4">
-                    <HBox alignment="CENTER_LEFT" spacing="10.0">
-                        <Label style="-fx-font-size: 24px;" text="📦" />
-                        <VBox spacing="2.0">
-                            <Label styleClass="metric-label" text="Stock" />
-                            <Label fx:id="stocksCountLabel" styleClass="metric-value" text="0" />
-                        </VBox>
-                    </HBox>
+                    <Label styleClass="metric-label" text="Stock" />
+                    <Label fx:id="stocksCountLabel" styleClass="metric-value" text="0" />
                 </VBox>
             </GridPane>
-            <VBox spacing="12.0" styleClass="work-area">
-                <Label styleClass="section-title" text="Modules CRUD" />
-                <Label styleClass="section-copy" text="La navigation est preparee pour les prochaines phases: Farm, Animal, Stock, Task et Cultiver Management." wrapText="true" />
+            <VBox spacing="12.0" styleClass="work-area" VBox.vgrow="ALWAYS">
+                <Label styleClass="section-title" text="Vue d'ensemble" />
                 <Label fx:id="statusLabel" styleClass="status-label" text="" />
             </VBox>
         </VBox>

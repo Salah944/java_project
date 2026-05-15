@@ -55,4 +55,10 @@ public class OuvrierService {
             throw new ValidationException("Le salaire doit etre positif ou nul.");
         }
     }
+
+    public void updateOuvrier(Ouvrier selectedWorker, int id) {
+    }
+
+    public void deleteOuvrier(int id) {
+    }
 }
