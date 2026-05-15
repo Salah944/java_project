@@ -23,7 +23,7 @@ public class Ouvrier extends User {
 
     public double getSalaire() { return salaire; }
     public void setSalaire(double salaire) { this.salaire = salaire; }
-    public int getFarmId() { return farmId; }
+    public Integer getFarmId() { return farmId; }
     public void setFarmId(int farmId) { this.farmId = farmId; }
 
     @Override

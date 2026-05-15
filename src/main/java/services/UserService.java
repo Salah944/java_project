@@ -11,7 +11,7 @@ import util.ValidationUtils;
 import java.util.List;
 
 public class UserService {
-    private final UserDAO userDAO = new UserDAOImpl();
+    public final UserDAO userDAO = new UserDAOImpl();
 
     public User createUser(User user) {
         validateUser(user);
